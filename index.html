@@ -3,548 +3,751 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TOEIC Vocabulary Mastery</title>
+  <title>TOEIC Vocabulary Master</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="/_sdk/element_sdk.js"></script>
   <script src="/_sdk/data_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
-    * { font-family: 'Kanit', sans-serif; }
-    .card-flip { perspective: 1000px; }
-    .card-inner { transition: transform 0.6s; transform-style: preserve-3d; }
-    .card-inner.flipped { transform: rotateY(180deg); }
-    .card-front, .card-back { backface-visibility: hidden; position: absolute; width: 100%; height: 100%; }
-    .card-back { transform: rotateY(180deg); }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    * { font-family: 'Prompt', 'Space Grotesk', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+    .card-glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    .btn-primary { background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%); }
+    .btn-primary:hover { background: linear-gradient(135deg, #ff6b6b 0%, #e94560 100%); }
+    .progress-bar { background: linear-gradient(90deg, #00d9ff, #00ff88); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-    .animate-slide { animation: slideIn 0.5s ease-out; }
-    .animate-pulse-once { animation: pulse 0.3s ease-in-out; }
-    .progress-ring { transition: stroke-dashoffset 0.5s ease; }
-    .mastered-badge { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    .animate-fade { animation: fadeIn 0.5s ease-out; }
+    .animate-pulse-btn { animation: pulse 2s infinite; }
+    .animate-slide { animation: slideIn 0.3s ease-out; }
+    .day-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(233,69,96,0.2); }
+    .word-card:hover { border-color: #e94560; }
+    .option-btn { transition: all 0.2s ease; }
+    .option-btn:hover { background: rgba(233,69,96,0.2); border-color: #e94560; }
+    .option-btn.correct { background: rgba(0,255,136,0.3); border-color: #00ff88; }
+    .option-btn.wrong { background: rgba(255,71,87,0.3); border-color: #ff4757; }
+    .speaker-btn { transition: transform 0.2s; }
+    .speaker-btn:hover { transform: scale(1.2); }
+    .speaker-btn:active { transform: scale(0.9); }
   </style>
   <style>body { box-sizing: border-box; }</style>
  </head>
- <body class="h-full overflow-auto bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-  <div id="app" class="w-full min-h-full"><!-- Header -->
-   <header class="sticky top-0 z-50 backdrop-blur-xl bg-slate-900/80 border-b border-purple-500/30">
-    <div class="max-w-6xl mx-auto px-4 py-4">
-     <div class="flex items-center justify-between">
-      <div>
-       <h1 id="main-title" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-pink-500 bg-clip-text text-transparent">TOEIC Vocabulary Mastery</h1>
-       <p class="text-purple-300 text-sm mt-1">เรียนรู้คำศัพท์ 5 วัน - จำได้ตลอดไป</p>
-      </div>
-      <div class="flex items-center gap-4">
-       <div class="text-center">
-        <div class="relative w-16 h-16">
-         <svg class="w-16 h-16 transform -rotate-90"><circle cx="32" cy="32" r="28" stroke="#4c1d95" stroke-width="4" fill="none" /> <circle id="progress-ring" class="progress-ring" cx="32" cy="32" r="28" stroke="#f59e0b" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="175.93" stroke-dashoffset="175.93" />
-         </svg><span id="progress-percent" class="absolute inset-0 flex items-center justify-center text-lg font-bold text-amber-400">0%</span>
-        </div>
-       </div>
-      </div>
+ <body class="h-full gradient-bg text-white overflow-auto">
+  <div id="app" class="min-h-full w-full"><!-- Header -->
+   <header class="sticky top-0 z-50 card-glass px-4 py-3">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+     <h1 id="main-title" class="text-xl md:text-2xl font-bold bg-gradient-to-r from-pink-500 to-yellow-500 bg-clip-text text-transparent">📚 TOEIC Vocabulary Master</h1>
+     <div class="flex items-center gap-2"><span id="streak-display" class="text-sm bg-gradient-to-r from-green-400 to-blue-500 px-3 py-1 rounded-full"> 🔥 0 คำถูก </span>
      </div>
     </div>
    </header><!-- Navigation Tabs -->
-   <nav class="sticky top-[88px] z-40 backdrop-blur-xl bg-slate-900/60 border-b border-purple-500/20">
-    <div class="max-w-6xl mx-auto px-4">
-     <div class="flex gap-1 overflow-x-auto py-3 scrollbar-hide"><button onclick="switchDay(0)" data-day="0" class="day-tab flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all bg-amber-500 text-slate-900">Day 1</button> <button onclick="switchDay(1)" data-day="1" class="day-tab flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all bg-purple-800/50 text-purple-300 hover:bg-purple-700/50">Day 2</button> <button onclick="switchDay(2)" data-day="2" class="day-tab flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all bg-purple-800/50 text-purple-300 hover:bg-purple-700/50">Day 3</button> <button onclick="switchDay(3)" data-day="3" class="day-tab flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all bg-purple-800/50 text-purple-300 hover:bg-purple-700/50">Day 4</button> <button onclick="switchDay(4)" data-day="4" class="day-tab flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all bg-purple-800/50 text-purple-300 hover:bg-purple-700/50">Day 5</button> <button onclick="switchToQuiz()" id="quiz-tab" class="day-tab flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all bg-pink-600/50 text-pink-200 hover:bg-pink-500/50 ml-2">🎯 ทดสอบ</button>
-     </div>
+   <nav class="max-w-6xl mx-auto px-4 py-4">
+    <div class="flex gap-2 overflow-x-auto pb-2"><button onclick="showView('home')" class="nav-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all bg-pink-500/20 border border-pink-500/50" data-view="home"> 🏠 หน้าหลัก </button> <button onclick="showView('learn')" class="nav-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all bg-white/10 border border-white/20" data-view="learn"> 📖 เรียนรู้ </button> <button onclick="showView('quiz')" class="nav-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all bg-white/10 border border-white/20" data-view="quiz"> 📝 ทดสอบ TOEIC </button> <button onclick="showView('stats')" class="nav-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all bg-white/10 border border-white/20" data-view="stats"> 📊 สถิติ </button>
     </div>
    </nav><!-- Main Content -->
-   <main class="max-w-6xl mx-auto px-4 py-6"><!-- Day Content -->
-    <div id="day-content" class="animate-slide">
-     <div class="mb-6">
-      <h2 id="day-title" class="text-xl md:text-2xl font-semibold text-amber-400 mb-2">Day 1: กลุ่มคำกริยาพื้นฐานในสำนักงาน</h2>
-      <p id="day-progress" class="text-purple-300 text-sm">ความคืบหน้า: <span class="text-amber-400 font-semibold">0/6</span> คำ</p>
-     </div><!-- Vocabulary Cards Grid -->
-     <div id="vocab-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><!-- Cards will be rendered here -->
-     </div><!-- Additional Words Section -->
-     <div id="additional-words" class="mt-8 p-5 rounded-2xl bg-gradient-to-br from-purple-900/50 to-slate-800/50 border border-purple-500/30">
-      <h3 class="text-lg font-semibold text-purple-300 mb-3">📚 คำศัพท์อื่นในกลุ่ม</h3>
-      <div id="additional-words-list" class="flex flex-wrap gap-2"><!-- Additional words will be rendered here -->
-      </div>
-     </div>
-    </div><!-- Quiz Section (Hidden by default) -->
-    <div id="quiz-content" class="hidden animate-slide">
+   <main class="max-w-6xl mx-auto px-4 pb-8"><!-- Home View -->
+    <div id="home-view" class="animate-fade">
      <div class="text-center mb-8">
-      <h2 class="text-2xl md:text-3xl font-bold text-amber-400 mb-2">🎯 ทดสอบความจำ</h2>
-      <p class="text-purple-300">ตอบคำถามเพื่อทดสอบความเข้าใจของคุณ</p>
+      <h2 class="text-2xl md:text-3xl font-bold mb-2">เรียนรู้คำศัพท์ TOEIC</h2>
+      <p class="text-gray-400">เลือก Day เพื่อเริ่มเรียนรู้คำศัพท์ตามหมวดหมู่</p>
      </div>
-     <div id="quiz-area" class="max-w-2xl mx-auto"><!-- Quiz Question -->
-      <div id="quiz-card" class="bg-gradient-to-br from-slate-800 to-purple-900/50 rounded-3xl p-8 border border-purple-500/30 shadow-2xl">
-       <div class="text-center mb-6"><span id="quiz-progress" class="inline-block px-4 py-1 rounded-full bg-amber-500/20 text-amber-400 text-sm font-medium">ข้อ 1/10</span>
+     <div id="days-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><!-- Days will be rendered here -->
+     </div>
+     <div class="mt-8 text-center"><button onclick="showView('quiz')" class="btn-primary px-8 py-4 rounded-2xl text-lg font-bold animate-pulse-btn shadow-lg shadow-pink-500/30"> 🎯 เริ่มทดสอบ TOEIC ทันที </button>
+     </div>
+    </div><!-- Learn View -->
+    <div id="learn-view" class="hidden animate-fade">
+     <div class="flex items-center gap-4 mb-6"><button onclick="showView('home')" class="text-gray-400 hover:text-white transition-colors"> ← กลับ </button>
+      <h2 id="learn-title" class="text-xl font-bold">Day 1-2: กลุ่มคำขึ้นต้น (Prefix) และ คำกริยาเฉพาะ</h2>
+     </div>
+     <div id="words-list" class="space-y-4"><!-- Words will be rendered here -->
+     </div>
+    </div><!-- Quiz View -->
+    <div id="quiz-view" class="hidden animate-fade">
+     <div class="card-glass rounded-3xl p-6 md:p-8"><!-- Quiz Setup -->
+      <div id="quiz-setup">
+       <h2 class="text-2xl font-bold mb-6 text-center">📝 ทดสอบแบบ TOEIC</h2>
+       <div class="mb-6"><label class="block text-sm text-gray-400 mb-2">เลือก Day ที่ต้องการทดสอบ:</label>
+        <div id="quiz-day-selection" class="flex flex-wrap gap-2"><!-- Day checkboxes -->
+        </div>
        </div>
-       <p id="quiz-question" class="text-xl md:text-2xl text-center mb-8 leading-relaxed">คำว่า "Obtain" มีความหมายว่าอะไร?</p>
-       <div id="quiz-options" class="space-y-3"><!-- Options will be rendered here -->
+       <div class="mb-6"><label class="block text-sm text-gray-400 mb-2">จำนวนข้อ:</label>
+        <div class="flex gap-2"><button onclick="setQuizCount(10)" class="quiz-count-btn px-4 py-2 rounded-lg bg-pink-500/20 border border-pink-500">10 ข้อ</button> <button onclick="setQuizCount(20)" class="quiz-count-btn px-4 py-2 rounded-lg bg-white/10 border border-white/20">20 ข้อ</button> <button onclick="setQuizCount(30)" class="quiz-count-btn px-4 py-2 rounded-lg bg-white/10 border border-white/20">ทั้งหมด</button>
+        </div>
+       </div><button onclick="startQuiz()" class="w-full btn-primary py-4 rounded-xl font-bold text-lg"> 🚀 เริ่มทดสอบ </button>
+      </div><!-- Quiz Progress -->
+      <div id="quiz-progress" class="hidden">
+       <div class="flex justify-between items-center mb-4"><span id="quiz-counter" class="text-gray-400">ข้อ 1/10</span> <span id="quiz-score" class="text-green-400">คะแนน: 0</span>
        </div>
-       <div id="quiz-feedback" class="hidden mt-6 p-4 rounded-xl text-center"><!-- Feedback will be shown here -->
-       </div>
+       <div class="h-2 bg-white/10 rounded-full mb-6 overflow-hidden">
+        <div id="quiz-progress-bar" class="progress-bar h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+       </div><!-- Question -->
+       <div id="quiz-question" class="mb-6">
+        <p class="text-lg md:text-xl mb-2">เลือกคำที่เหมาะสมที่สุด:</p>
+        <p id="quiz-sentence" class="text-xl md:text-2xl font-medium p-4 bg-white/5 rounded-xl"></p>
+       </div><!-- Options -->
+       <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6"><!-- Options will be rendered here -->
+       </div><!-- Feedback -->
+       <div id="quiz-feedback" class="hidden p-4 rounded-xl mb-4">
+        <p id="feedback-text" class="font-medium"></p>
+        <p id="feedback-meaning" class="text-sm text-gray-400 mt-1"></p>
+       </div><button id="next-question-btn" onclick="nextQuestion()" class="hidden w-full btn-primary py-3 rounded-xl font-bold"> ถัดไป → </button>
       </div><!-- Quiz Result -->
       <div id="quiz-result" class="hidden text-center">
-       <div class="bg-gradient-to-br from-slate-800 to-purple-900/50 rounded-3xl p-8 border border-purple-500/30">
-        <div class="text-6xl mb-4">
-         🎉
-        </div>
-        <h3 class="text-2xl font-bold text-amber-400 mb-2">ยอดเยี่ยม!</h3>
-        <p id="result-score" class="text-xl text-purple-200 mb-6">คุณตอบถูก 8/10 ข้อ</p><button onclick="startQuiz()" class="px-8 py-3 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-900 font-semibold hover:from-amber-400 hover:to-orange-400 transition-all transform hover:scale-105">เริ่มทำใหม่</button>
+       <div class="text-6xl mb-4">
+        🎉
+       </div>
+       <h3 class="text-2xl font-bold mb-2">ทำเสร็จแล้ว!</h3>
+       <p id="result-score" class="text-4xl font-bold text-green-400 mb-4">8/10</p>
+       <p id="result-percentage" class="text-gray-400 mb-6">ทำได้ 80%</p>
+       <div class="flex gap-4 justify-center"><button onclick="resetQuiz()" class="px-6 py-3 rounded-xl bg-white/10 border border-white/20 font-medium"> ทดสอบใหม่ </button> <button onclick="showView('learn')" class="px-6 py-3 rounded-xl btn-primary font-medium"> ทบทวนคำศัพท์ </button>
        </div>
       </div>
      </div>
+    </div><!-- Stats View -->
+    <div id="stats-view" class="hidden animate-fade">
+     <h2 class="text-2xl font-bold mb-6">📊 สถิติการเรียนรู้</h2>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="card-glass rounded-2xl p-4 text-center">
+       <div class="text-3xl font-bold text-green-400" id="stat-correct">
+        0
+       </div>
+       <div class="text-sm text-gray-400">
+        ตอบถูก
+       </div>
+      </div>
+      <div class="card-glass rounded-2xl p-4 text-center">
+       <div class="text-3xl font-bold text-red-400" id="stat-wrong">
+        0
+       </div>
+       <div class="text-sm text-gray-400">
+        ตอบผิด
+       </div>
+      </div>
+      <div class="card-glass rounded-2xl p-4 text-center">
+       <div class="text-3xl font-bold text-blue-400" id="stat-total">
+        0
+       </div>
+       <div class="text-sm text-gray-400">
+        คำที่เรียน
+       </div>
+      </div>
+      <div class="card-glass rounded-2xl p-4 text-center">
+       <div class="text-3xl font-bold text-yellow-400" id="stat-accuracy">
+        0%
+       </div>
+       <div class="text-sm text-gray-400">
+        ความแม่นยำ
+       </div>
+      </div>
+     </div>
+     <h3 class="text-lg font-bold mb-4">คำศัพท์ที่ต้องทบทวน</h3>
+     <div id="weak-words" class="space-y-2">
+      <p class="text-gray-400">ยังไม่มีข้อมูล - ลองทำแบบทดสอบดูนะ!</p>
+     </div>
     </div>
-   </main><!-- Floating Action Button --> <button onclick="shuffleCurrentDay()" class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg shadow-purple-500/30 flex items-center justify-center hover:from-pink-400 hover:to-purple-500 transition-all transform hover:scale-110 z-50"> <span class="text-2xl">🔀</span> </button>
+   </main>
   </div>
   <script>
     // Vocabulary Data
-    const vocabularyData = [
-      {
-        day: 1,
-        title: "Day 1: กลุ่มคำกริยาพื้นฐานในสำนักงาน",
+    const vocabularyData = {
+      "day1-2": {
+        title: "Day 1-2: กลุ่มคำขึ้นต้น (Prefix) และ คำกริยาเฉพาะ",
+        emoji: "🔮",
+        color: "from-purple-500 to-pink-500",
         words: [
-          { id: "obtain", word: "Obtain", meaning: "ได้รับ/ได้มา", example: "The local authority may assist you to obtain alternative accommodation.", exampleTh: "เจ้าหน้าที่ท้องถิ่นอาจช่วยให้คุณได้รับที่พักทางเลือกชั่วคราว" },
-          { id: "retain", word: "Retain", meaning: "เก็บไว้", example: "It is important to retain the receipt in case you need to return the item.", exampleTh: "สิ่งสำคัญคือต้องเก็บใบเสร็จเอาไว้เผื่อในกรณีที่คุณต้องการคืนสินค้า" },
-          { id: "maintain", word: "Maintain", meaning: "บำรุงรักษา/คงสภาพ", example: "The company must maintain high standards of quality.", exampleTh: "บริษัทจะต้องรักษามาตรฐานของคุณภาพสินค้าให้สูงอยู่เสมอ" },
-          { id: "sustain", word: "Sustain", meaning: "รักษา/ค้ำจุน", example: "We need to sustain our efforts to succeed.", exampleTh: "เราต้องรักษาความพยายามไว้เพื่อประสบความสำเร็จ" },
-          { id: "contain", word: "Contain", meaning: "บรรจุ/ประกอบด้วย", example: "This box contains important documents.", exampleTh: "กล่องนี้บรรจุเอกสารสำคัญ" },
-          { id: "remain", word: "Remain", meaning: "ยังคง/เหลืออยู่", example: "Please remain seated until the plane stops.", exampleTh: "กรุณานั่งอยู่กับที่จนกว่าเครื่องบินจะหยุด" }
-        ],
-        additional: ["Sustain", "Contain", "Remain"]
+          { word: "Predict", thai: "ทำนาย", example: "You can never predict what will happen next.", exampleThai: "คุณไม่มีทางทำนายได้เลยว่าอะไรจะเกิดขึ้นต่อไป" },
+          { word: "Prevent", thai: "ป้องกัน", example: "His disabilities prevent him from driving.", exampleThai: "ความไม่สมบูรณ์ของร่างกายขัดขวางไม่ให้เขาขับรถได้" },
+          { word: "Intend to", thai: "ตั้งใจที่จะ", example: "Miss Chambers intends to finish processing all accounts by tonight.", exampleThai: "คุณ Chambers ตั้งใจที่จะจัดการบัญชีทั้งหมดให้เสร็จคืนนี้" },
+          { word: "Respond to", thai: "ตอบกลับ", example: "New customer service personnel are trained to respond to inquiries.", exampleThai: "พนักงานใหม่ถูกฝึกมาเพื่อตอบคำถามลูกค้า" },
+          { word: "Require", thai: "เรียกร้อง/บังคับ", example: "The company requires all employees to wear identification badges.", exampleThai: "บริษัทกำหนดให้พนักงานทุกคนต้องติดบัตรประจำตัว" }
+        ]
       },
-      {
-        day: 2,
-        title: "Day 2: กลุ่มคำกริยาที่ลงท้ายด้วย -ed",
+      "day3": {
+        title: "Day 3: กลุ่มคำกริยาเกี่ยวกับการพูด",
+        emoji: "🗣️",
+        color: "from-blue-500 to-cyan-500",
         words: [
-          { id: "limited", word: "Limited", meaning: "ถูกจำกัด", example: "The offer was limited to the first 100 customers only.", exampleTh: "ข้อเสนอนี้ถูกจำกัดเฉพาะสำหรับลูกค้า 100 คนแรกเท่านั้น" },
-          { id: "directed", word: "Directed", meaning: "ถูกส่งตรงไปหา", example: "All inquiries must be directed to the manager at the time.", exampleTh: "คำถามหรือข้อสงสัยทั้งหมดจะต้องถูกส่งตรงไปยังผู้จัดการในขณะนั้น" },
-          { id: "committed", word: "Committed", meaning: "มุ่งมั่น/สัญญา", example: "The company is committed to providing excellent customer service.", exampleTh: "บริษัทมีความมุ่งมั่นที่จะให้บริการลูกค้าที่ยอดเยี่ยมที่สุด" },
-          { id: "recommended", word: "Recommended", meaning: "ถูกแนะนำ", example: "The product was highly recommended by industry experts.", exampleTh: "ผลิตภัณฑ์นี้ได้รับคำแนะนำเป็นอย่างสูงจากผู้เชี่ยวชาญในอุตสาหกรรม" },
-          { id: "customized", word: "Customized", meaning: "ถูกปรับเปลี่ยนให้เหมาะสม", example: "The car was customized to fit the client's specific needs.", exampleTh: "รถยนต์คันนี้ถูกปรับแต่งมาเป็นพิเศษเพื่อให้เหมาะสมกับความต้องการเฉพาะของลูกค้า" },
-          { id: "specialized", word: "Specialized", meaning: "ชำนาญเป็นพิเศษ", example: "The candidate is specialized in graphic design.", exampleTh: "ผู้สมัครคนนี้มีความชำนาญพิเศษทางด้านการออกแบบกราฟิก" },
-          { id: "repeated", word: "Repeated", meaning: "ซ้ำซาก/เกิดขึ้นบ่อย", example: "The manager noticed the repeated errors in the report.", exampleTh: "ผู้จัดการสังเกตเห็นข้อผิดพลาดที่เกิดขึ้นซ้ำๆ ในรายงาน" },
-          { id: "expected", word: "Expected", meaning: "ถูกคาดหวัง", example: "The results were expected to be announced at the meeting.", exampleTh: "ผลลัพธ์ได้รับการคาดหมายว่าจะมีการประกาศในการประชุม" },
-          { id: "dedicated", word: "Dedicated / Devoted", meaning: "ทุ่มเท", example: "She is dedicated to her research and works long hours.", exampleTh: "เธอทุ่มเทให้กับการทำงานวิจัยของเธอมาก" },
-          { id: "recognized", word: "Recognized", meaning: "ได้รับการยอมรับ", example: "The brand is internationally recognized for its quality products.", exampleTh: "แบรนด์นี้ได้รับการยอมรับในระดับสากล" },
-          { id: "terminated", word: "Terminated", meaning: "ถูกยกเลิกสัญญา", example: "The contract was terminated due to the failure to meet project deadlines.", exampleTh: "สัญญาถูกยกเลิกเนื่องจากไม่สามารถส่งงานได้ตามกำหนด" },
-          { id: "submitted", word: "Submitted", meaning: "ถูกส่ง", example: "The application was submitted before the deadline.", exampleTh: "ใบสมัครถูกส่งไปเรียบร้อยแล้วก่อนถึงกำหนดเวลา" }
-        ],
-        additional: []
+          { word: "Inform", thai: "แจ้ง/บอก", example: "Please inform Benjamin of the changes.", exampleThai: "กรุณาแจ้งคุณเบนจามินเกี่ยวกับการเปลี่ยนแปลง" },
+          { word: "Notify", thai: "แจ้งให้ทราบ", example: "We will notify you of any updates.", exampleThai: "เราจะแจ้งให้คุณทราบเกี่ยวกับการอัปเดตใดๆ" },
+          { word: "Suggest", thai: "แนะนำ", example: "The manager suggested that we store food items in a cool place.", exampleThai: "ผู้จัดการแนะนำว่าเราควรเก็บอาหารไว้ในที่เย็น" },
+          { word: "Introduce", thai: "แนะนำตัว", example: "I'd like to introduce you to the whole class.", exampleThai: "ฉันอยากจะแนะนำคุณให้เพื่อนทั้งห้องรู้จัก" }
+        ]
       },
-      {
-        day: 3,
-        title: "Day 3: กลุ่มคำเชื่อม (Connectors / Transitions)",
+      "day4": {
+        title: "Day 4: กลุ่มคำกริยาวิเศษณ์ (-ly)",
+        emoji: "✨",
+        color: "from-yellow-500 to-orange-500",
         words: [
-          { id: "such_as", word: "Such as", meaning: "ตัวอย่างเช่น", example: "He enjoys outdoor activities such as hiking and camping.", exampleTh: "เขาชอบกิจกรรมกลางแจ้ง เช่น การเดินป่าและการตั้งแคมป์" },
-          { id: "as_well_as", word: "As well as", meaning: "เช่นเดียวกับ/และ", example: "She is skilled in graphic design as well as web development.", exampleTh: "เธอมีทักษะในการออกแบบกราฟิกรวมถึงการพัฒนาเว็บ" },
-          { id: "because_of", word: "Because of", meaning: "เพราะว่า/เนื่องจาก", example: "The flight was delayed because of heavy rain.", exampleTh: "เที่ยวบินล่าช้าเนื่องจากฝนตกหนัก" },
-          { id: "in_case_of", word: "In case of", meaning: "ในกรณีที่/เผื่อว่า", example: "In case of emergency, call 911 immediately.", exampleTh: "ในกรณีฉุกเฉิน โทร 911 ทันที" },
-          { id: "as_soon_as", word: "As soon as", meaning: "ทันทีที่", example: "We will start the meeting as soon as everyone arrives.", exampleTh: "เราจะเริ่มประชุมทันทีที่ทุกคนมาถึง" },
-          { id: "in_spite_of", word: "In spite of / Despite", meaning: "ทั้งๆ ที่", example: "She went to work in spite of feeling unwell.", exampleTh: "เธอไปทำงานทั้งๆ ที่รู้สึกไม่สบาย" },
-          { id: "by_the_time", word: "By the time", meaning: "พอถึงเวลาที่", example: "By the time we finished the report, it was already midnight.", exampleTh: "พอเราทำรายงานเสร็จ ก็เที่ยงคืนแล้ว" },
-          { id: "in_order_to", word: "In order to", meaning: "เพื่อที่จะ", example: "He studied hard in order to pass the exam.", exampleTh: "เขาอ่านหนังสือหนักเพื่อที่จะสอบผ่าน" },
-          { id: "among", word: "Among", meaning: "ท่ามกลาง/ในหมู่", example: "The secret was shared among the members of the club.", exampleTh: "ความลับถูกแบ่งปันกันในหมู่สมาชิกของชมรม" },
-          { id: "according_to", word: "According to", meaning: "ตามที่...กล่าวไว้", example: "According to CNN, the economy is expected to grow by 3% this year.", exampleTh: "ตามรายงานของ CNN เศรษฐกิจคาดว่าจะเติบโต 3% ในปีนี้" }
-        ],
-        additional: ["Due to", "Thanks to", "Owing to", "In the event of", "So as to"]
+          { word: "Equally", thai: "อย่างเท่าเทียม", example: "The resources were equally distributed.", exampleThai: "ทรัพยากรถูกกระจายอย่างเท่าเทียมกัน" },
+          { word: "Frequently", thai: "อย่างบ่อยครั้ง", example: "We frequently hold meetings.", exampleThai: "เราจัดประชุมกันบ่อยครั้ง" },
+          { word: "Extremely", thai: "อย่างมาก/สุดๆ", example: "This job may be extremely difficult.", exampleThai: "งานนี้อาจจะยากสุดๆ ไปเลย" }
+        ]
       },
-      {
-        day: 4,
-        title: "Day 4: กลุ่มคำกริยาขึ้นต้นด้วย Pre- / Pro-",
+      "day5": {
+        title: "Day 5: กลุ่มลงท้าย -tain, -pose, -form, -sure",
+        emoji: "🎯",
+        color: "from-green-500 to-teal-500",
         words: [
-          { id: "predict", word: "Predict", meaning: "ทำนาย", example: "You can never predict what will happen next.", exampleTh: "คุณไม่มีทางทำนายได้เลยว่าจะเกิดอะไรขึ้นต่อไป" },
-          { id: "prevent", word: "Prevent", meaning: "ป้องกัน", example: "We take every precaution to avoid accidents.", exampleTh: "เราใช้มาตรการป้องกันทุกอย่างเพื่อหลีกเลี่ยงอุบัติเหตุ" },
-          { id: "preserve", word: "Preserve", meaning: "สงวน/รักษาไว้", example: "We must preserve our natural resources.", exampleTh: "เราต้องรักษาทรัพยากรธรรมชาติของเรา" },
-          { id: "prepare", word: "Prepare", meaning: "เตรียม", example: "Please prepare the documents for tomorrow's meeting.", exampleTh: "กรุณาเตรียมเอกสารสำหรับการประชุมพรุ่งนี้" },
-          { id: "propose", word: "Propose", meaning: "เสนอ", example: "I would like to propose a new marketing strategy.", exampleTh: "ผมอยากจะเสนอกลยุทธ์การตลาดใหม่" },
-          { id: "produce", word: "Produce", meaning: "ผลิต", example: "The factory produces 1000 units per day.", exampleTh: "โรงงานผลิตสินค้า 1000 ชิ้นต่อวัน" },
-          { id: "provide", word: "Provide", meaning: "จัดหา/ให้", example: "The hotel provides free Wi-Fi for all guests.", exampleTh: "โรงแรมให้บริการ Wi-Fi ฟรีสำหรับแขกทุกคน" },
-          { id: "promote", word: "Promote", meaning: "ส่งเสริม/เลื่อนตำแหน่ง", example: "She was promoted to senior manager last month.", exampleTh: "เธอได้รับการเลื่อนตำแหน่งเป็นผู้จัดการอาวุโสเมื่อเดือนที่แล้ว" }
-        ],
-        additional: ["Prepare", "Propose", "Produce", "Provide", "Promote"]
+          { word: "Obtain", thai: "ได้รับ/ได้มา", example: "The local authority may assist you to obtain alternative accommodation.", exampleThai: "เจ้าหน้าที่อาจช่วยให้คุณได้รับที่พักทางเลือก" },
+          { word: "Maintain", thai: "บำรุงรักษา", example: "The company must maintain high standards of quality.", exampleThai: "บริษัทต้องรักษามาตรฐานคุณภาพให้สูงอยู่เสมอ" },
+          { word: "Propose", thai: "นำเสนอ", example: "The manager will propose a new marketing strategy.", exampleThai: "ผู้จัดการจะนำเสนอกลยุทธ์การตลาดใหม่" },
+          { word: "Ensure", thai: "ทำให้มั่นใจ", example: "Please ensure that all lights are turned off.", exampleThai: "กรุณาตรวจสอบให้แน่ใจว่าปิดไฟทุกดวงแล้ว" }
+        ]
       },
-      {
-        day: 5,
-        title: "Day 5: กลุ่มคำกริยาลงท้ายด้วย -vey / -lay",
+      "day6-7": {
+        title: "Day 6-7: กลุ่มลงท้าย -ate, -ble, -ize, -ment, -ty, -ive",
+        emoji: "📈",
+        color: "from-pink-500 to-rose-500",
         words: [
-          { id: "convey", word: "Convey", meaning: "ส่งต่อ/สื่อสาร", example: "Please convey my message to him.", exampleTh: "กรุณาส่งต่อข้อความของฉันไปให้เขาด้วย" },
-          { id: "survey", word: "Survey", meaning: "สำรวจ", example: "We conducted a customer satisfaction survey.", exampleTh: "เราทำการสำรวจความพึงพอใจของลูกค้า" },
-          { id: "display", word: "Display", meaning: "แสดง/จัดแสดง", example: "The store displays the latest products in the window.", exampleTh: "ร้านค้าจัดแสดงสินค้าใหม่ล่าสุดในหน้าต่าง" },
-          { id: "delay", word: "Delay", meaning: "ล่าช้า/เลื่อน", example: "The project was delayed due to budget constraints.", exampleTh: "โครงการถูกเลื่อนออกไปเนื่องจากข้อจำกัดด้านงบประมาณ" }
-        ],
-        additional: ["Survey", "Display", "Delay"]
+          { word: "Participate", thai: "เข้าร่วม", example: "Everyone who wishes to participate in the seminar must register.", exampleThai: "ทุกคนที่ต้องการเข้าร่วมสัมมนาต้องลงทะเบียน" },
+          { word: "Available", thai: "ว่าง/มีอยู่", example: "The information will be available online.", exampleThai: "ข้อมูลจะมีให้ดูผ่านทางออนไลน์" },
+          { word: "Analyze", thai: "วิเคราะห์", example: "The research team will analyze the data.", exampleThai: "ทีมวิจัยจะวิเคราะห์ข้อมูล" },
+          { word: "Achievement", thai: "ความสำเร็จ", example: "Her recent promotion was a significant achievement.", exampleThai: "การเลื่อนตำแหน่งล่าสุดของเธอคือความสำเร็จที่สำคัญ" },
+          { word: "Productivity", thai: "ประสิทธิภาพ", example: "The team's productivity improved significantly.", exampleThai: "ประสิทธิภาพของทีมดีขึ้นอย่างเห็นได้ชัด" }
+        ]
+      },
+      "day8-9": {
+        title: "Day 8-9: กลุ่มลงท้าย -ure และ -ent",
+        emoji: "⚡",
+        color: "from-indigo-500 to-purple-500",
+        words: [
+          { word: "Procedure", thai: "ขั้นตอน", example: "The company implemented a new procedure for reporting hazards.", exampleThai: "บริษัทใช้ขั้นตอนใหม่ในการรายงานอันตราย" },
+          { word: "Apparent", thai: "ชัดเจน", example: "It was apparent that the new policy was not well received.", exampleThai: "มันเห็นได้ชัดว่านโยบายใหม่ไม่ได้รับการตอบรับที่ดี" },
+          { word: "Efficient", thai: "มีประสิทธิภาพ", example: "Our goal is to create an efficient system.", exampleThai: "เป้าหมายของเราคือการสร้างระบบที่มีประสิทธิภาพ" }
+        ]
+      },
+      "day10": {
+        title: "Day 10: กลุ่มคำกริยาเติม -ed",
+        emoji: "🏆",
+        color: "from-amber-500 to-yellow-500",
+        words: [
+          { word: "Limited", thai: "ถูกจำกัด", example: "The offer was limited to the first 100 customers.", exampleThai: "ข้อเสนอนี้จำกัดเฉพาะลูกค้า 100 คนแรก" },
+          { word: "Directed to", thai: "ถูกส่งตรงไปหา", example: "All inquiries must be directed to the manager.", exampleThai: "คำถามทั้งหมดต้องส่งตรงไปยังผู้จัดการ" },
+          { word: "Committed to", thai: "มุ่งมั่นที่จะ", example: "The company is committed to providing excellent service.", exampleThai: "บริษัทมุ่งมั่นที่จะให้บริการที่ยอดเยี่ยม" }
+        ]
       }
-    ];
-
-    // App State
-    let currentDay = 0;
-    let masteredWords = new Map();
-    let isQuizMode = false;
-    let quizQuestions = [];
-    let currentQuizIndex = 0;
-    let quizScore = 0;
-
-    // Config for Element SDK
-    const defaultConfig = {
-      app_title: "TOEIC Vocabulary Mastery",
-      background_color: "#0f172a",
-      card_color: "#1e1b4b",
-      text_color: "#e2e8f0",
-      accent_color: "#f59e0b",
-      secondary_color: "#a855f7",
-      font_family: "Kanit",
-      font_size: 16
     };
 
-    let config = { ...defaultConfig };
+    // State
+    let currentView = 'home';
+    let currentDay = null;
+    let quizQuestions = [];
+    let currentQuestionIndex = 0;
+    let quizScore = 0;
+    let selectedDays = ['day1-2', 'day3', 'day4', 'day5', 'day6-7', 'day8-9', 'day10'];
+    let quizCount = 10;
+    let userProgress = [];
+    let totalCorrect = 0;
 
-    // Element SDK Integration
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange: async (newConfig) => {
-          config = { ...defaultConfig, ...newConfig };
-          applyConfig();
-        },
-        mapToCapabilities: (cfg) => ({
-          recolorables: [
-            { get: () => cfg.background_color || defaultConfig.background_color, set: (v) => { cfg.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
-            { get: () => cfg.card_color || defaultConfig.card_color, set: (v) => { cfg.card_color = v; window.elementSdk.setConfig({ card_color: v }); } },
-            { get: () => cfg.text_color || defaultConfig.text_color, set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
-            { get: () => cfg.accent_color || defaultConfig.accent_color, set: (v) => { cfg.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } },
-            { get: () => cfg.secondary_color || defaultConfig.secondary_color, set: (v) => { cfg.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } }
-          ],
-          borderables: [],
-          fontEditable: { get: () => cfg.font_family || defaultConfig.font_family, set: (v) => { cfg.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
-          fontSizeable: { get: () => cfg.font_size || defaultConfig.font_size, set: (v) => { cfg.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
-        }),
-        mapToEditPanelValues: (cfg) => new Map([
-          ["app_title", cfg.app_title || defaultConfig.app_title]
-        ])
-      });
-      config = { ...defaultConfig, ...window.elementSdk.config };
+    // Default config
+    const defaultConfig = {
+      app_title: "📚 TOEIC Vocabulary Master",
+      background_color: "#1a1a2e",
+      surface_color: "#16213e",
+      text_color: "#ffffff",
+      primary_action_color: "#e94560",
+      secondary_action_color: "#00d9ff"
+    };
+
+    // Text-to-Speech function
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8;
+        utterance.pitch = 1;
+        window.speechSynthesis.speak(utterance);
+      }
     }
 
-    function applyConfig() {
-      const title = document.getElementById('main-title');
-      if (title) title.textContent = config.app_title || defaultConfig.app_title;
-      
-      document.body.style.fontFamily = `${config.font_family || defaultConfig.font_family}, sans-serif`;
-      const baseSize = config.font_size || defaultConfig.font_size;
-      document.querySelectorAll('h1').forEach(el => el.style.fontSize = `${baseSize * 1.875}px`);
-      document.querySelectorAll('h2').forEach(el => el.style.fontSize = `${baseSize * 1.5}px`);
-      document.querySelectorAll('p, span, button').forEach(el => {
-        if (!el.classList.contains('text-2xl') && !el.classList.contains('text-xl')) {
-          el.style.fontSize = `${baseSize}px`;
-        }
-      });
-    }
-
-    // Data SDK Integration
+    // Data handler for SDK
     const dataHandler = {
       onDataChanged(data) {
-        masteredWords.clear();
-        data.forEach(record => {
-          if (record.mastered) {
-            masteredWords.set(record.word_id, record);
-          }
-        });
-        updateProgress();
-        renderCurrentView();
+        userProgress = data;
+        updateStats();
+        updateStreakDisplay();
       }
     };
 
-    async function initDataSdk() {
+    // Initialize SDKs
+    async function initApp() {
+      // Initialize Element SDK
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (config) => {
+            const titleEl = document.getElementById('main-title');
+            if (titleEl) {
+              titleEl.textContent = config.app_title || defaultConfig.app_title;
+            }
+            document.body.style.background = `linear-gradient(135deg, ${config.background_color || defaultConfig.background_color} 0%, ${config.surface_color || defaultConfig.surface_color} 100%)`;
+          },
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.background_color || defaultConfig.background_color,
+                set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); }
+              },
+              {
+                get: () => config.surface_color || defaultConfig.surface_color,
+                set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+              },
+              {
+                get: () => config.primary_action_color || defaultConfig.primary_action_color,
+                set: (v) => { config.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); }
+              },
+              {
+                get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+                set: (v) => { config.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); }
+              }
+            ],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ["app_title", config.app_title || defaultConfig.app_title]
+          ])
+        });
+      }
+
+      // Initialize Data SDK
       if (window.dataSdk) {
         const result = await window.dataSdk.init(dataHandler);
         if (!result.isOk) {
-          console.error("Failed to initialize Data SDK");
+          console.error("Failed to initialize data SDK");
         }
       }
+
+      renderDaysGrid();
+      renderQuizDaySelection();
     }
 
-    initDataSdk();
-
-    // Toggle Mastered Status
-    async function toggleMastered(wordId) {
-      const existingRecord = masteredWords.get(wordId);
+    // Render days grid on home
+    function renderDaysGrid() {
+      const grid = document.getElementById('days-grid');
+      grid.innerHTML = '';
       
-      if (existingRecord) {
-        const result = await window.dataSdk.delete(existingRecord);
-        if (result.isOk) {
-          masteredWords.delete(wordId);
-          updateCardUI(wordId, false);
-        }
-      } else {
-        if (masteredWords.size >= 999) {
-          showToast("ถึงจำนวนสูงสุดแล้ว!");
-          return;
-        }
-        const result = await window.dataSdk.create({
-          word_id: wordId,
-          mastered: true,
-          last_reviewed: new Date().toISOString()
-        });
-        if (result.isOk) {
-          updateCardUI(wordId, true);
-        }
-      }
-      updateProgress();
-    }
-
-    function updateCardUI(wordId, isMastered) {
-      const card = document.querySelector(`[data-word-id="${wordId}"]`);
-      if (card) {
-        const badge = card.querySelector('.mastery-badge');
-        const btn = card.querySelector('.master-btn');
-        if (isMastered) {
-          if (badge) badge.classList.remove('hidden');
-          if (btn) {
-            btn.classList.add('bg-green-600');
-            btn.classList.remove('bg-purple-600');
-            btn.textContent = '✓ จำได้แล้ว';
-          }
-        } else {
-          if (badge) badge.classList.add('hidden');
-          if (btn) {
-            btn.classList.remove('bg-green-600');
-            btn.classList.add('bg-purple-600');
-            btn.textContent = '📝 ทำเครื่องหมาย';
-          }
-        }
-      }
-    }
-
-    // Update Progress
-    function updateProgress() {
-      const totalWords = vocabularyData.reduce((sum, day) => sum + day.words.length, 0);
-      const masteredCount = masteredWords.size;
-      const percent = Math.round((masteredCount / totalWords) * 100);
-      
-      const ring = document.getElementById('progress-ring');
-      const percentText = document.getElementById('progress-percent');
-      
-      if (ring) {
-        const circumference = 175.93;
-        const offset = circumference - (percent / 100) * circumference;
-        ring.style.strokeDashoffset = offset;
-      }
-      if (percentText) {
-        percentText.textContent = `${percent}%`;
-      }
-      
-      // Update day progress
-      const dayData = vocabularyData[currentDay];
-      if (dayData) {
-        const dayMastered = dayData.words.filter(w => masteredWords.has(w.id)).length;
-        const dayProgress = document.getElementById('day-progress');
-        if (dayProgress) {
-          dayProgress.innerHTML = `ความคืบหน้า: <span class="text-amber-400 font-semibold">${dayMastered}/${dayData.words.length}</span> คำ`;
-        }
-      }
-    }
-
-    // Switch Day
-    function switchDay(dayIndex) {
-      currentDay = dayIndex;
-      isQuizMode = false;
-      
-      document.querySelectorAll('.day-tab').forEach((tab, i) => {
-        if (i === dayIndex) {
-          tab.classList.add('bg-amber-500', 'text-slate-900');
-          tab.classList.remove('bg-purple-800/50', 'text-purple-300', 'bg-pink-600/50', 'text-pink-200');
-        } else if (tab.id === 'quiz-tab') {
-          tab.classList.add('bg-pink-600/50', 'text-pink-200');
-          tab.classList.remove('bg-amber-500', 'text-slate-900');
-        } else {
-          tab.classList.add('bg-purple-800/50', 'text-purple-300');
-          tab.classList.remove('bg-amber-500', 'text-slate-900');
-        }
-      });
-      
-      document.getElementById('day-content').classList.remove('hidden');
-      document.getElementById('quiz-content').classList.add('hidden');
-      
-      renderCurrentView();
-    }
-
-    // Switch to Quiz
-    function switchToQuiz() {
-      isQuizMode = true;
-      
-      document.querySelectorAll('.day-tab').forEach(tab => {
-        if (tab.id === 'quiz-tab') {
-          tab.classList.add('bg-amber-500', 'text-slate-900');
-          tab.classList.remove('bg-pink-600/50', 'text-pink-200');
-        } else {
-          tab.classList.add('bg-purple-800/50', 'text-purple-300');
-          tab.classList.remove('bg-amber-500', 'text-slate-900');
-        }
-      });
-      
-      document.getElementById('day-content').classList.add('hidden');
-      document.getElementById('quiz-content').classList.remove('hidden');
-      
-      startQuiz();
-    }
-
-    // Render Current View
-    function renderCurrentView() {
-      if (isQuizMode) return;
-      
-      const dayData = vocabularyData[currentDay];
-      
-      document.getElementById('day-title').textContent = dayData.title;
-      
-      const grid = document.getElementById('vocab-grid');
-      grid.innerHTML = dayData.words.map(word => {
-        const isMastered = masteredWords.has(word.id);
-        return `
-          <div data-word-id="${word.id}" class="card-flip h-64 cursor-pointer group" onclick="flipCard(this)">
-            <div class="card-inner relative w-full h-full">
-              <!-- Front -->
-              <div class="card-front bg-gradient-to-br from-slate-800 to-purple-900/50 rounded-2xl p-5 border border-purple-500/30 shadow-xl hover:border-amber-500/50 transition-all">
-                ${isMastered ? '<div class="mastery-badge absolute top-3 right-3 w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center text-white text-sm">✓</div>' : '<div class="mastery-badge hidden absolute top-3 right-3 w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center text-white text-sm">✓</div>'}
-                <div class="h-full flex flex-col justify-center items-center text-center">
-                  <h3 class="text-2xl font-bold text-amber-400 mb-3">${word.word}</h3>
-                  <p class="text-purple-300 text-lg">${word.meaning}</p>
-                  <p class="text-purple-400/60 text-sm mt-4">แตะเพื่อดูตัวอย่าง</p>
-                </div>
-              </div>
-              <!-- Back -->
-              <div class="card-back bg-gradient-to-br from-amber-900/30 to-purple-900/50 rounded-2xl p-5 border border-amber-500/30 shadow-xl">
-                <div class="h-full flex flex-col justify-between">
-                  <div>
-                    <h4 class="text-lg font-semibold text-amber-400 mb-3">📝 ตัวอย่างประโยค</h4>
-                    <p class="text-purple-100 text-sm leading-relaxed mb-3 italic">"${word.example}"</p>
-                    <p class="text-purple-300 text-sm leading-relaxed">${word.exampleTh}</p>
-                  </div>
-                  <button onclick="event.stopPropagation(); toggleMastered('${word.id}')" class="master-btn w-full py-2 rounded-full ${isMastered ? 'bg-green-600' : 'bg-purple-600'} hover:opacity-90 transition-all text-white text-sm font-medium">
-                    ${isMastered ? '✓ จำได้แล้ว' : '📝 ทำเครื่องหมาย'}
-                  </button>
-                </div>
-              </div>
-            </div>
+      Object.entries(vocabularyData).forEach(([dayId, day], index) => {
+        const card = document.createElement('div');
+        card.className = `day-card card-glass rounded-2xl p-6 cursor-pointer transition-all duration-300 animate-slide`;
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.onclick = () => openDay(dayId);
+        
+        const wordCount = day.words.length;
+        const masteredCount = userProgress.filter(p => 
+          day.words.some(w => w.word === p.word_id) && p.correct_count > p.wrong_count
+        ).length;
+        
+        card.innerHTML = `
+          <div class="text-4xl mb-3">${day.emoji}</div>
+          <h3 class="font-bold text-lg mb-2 bg-gradient-to-r ${day.color} bg-clip-text text-transparent">${day.title.split(':')[0]}</h3>
+          <p class="text-sm text-gray-400 mb-3">${day.title.split(':')[1] || ''}</p>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-gray-500">${wordCount} คำศัพท์</span>
+            <span class="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400">${masteredCount}/${wordCount} ✓</span>
           </div>
         `;
-      }).join('');
+        grid.appendChild(card);
+      });
+    }
+
+    // Open day for learning
+    function openDay(dayId) {
+      currentDay = dayId;
+      const day = vocabularyData[dayId];
+      document.getElementById('learn-title').textContent = day.title;
+      renderWordsList(day.words);
+      showView('learn');
+    }
+
+    // Render words list
+    function renderWordsList(words) {
+      const list = document.getElementById('words-list');
+      list.innerHTML = '';
       
-      // Additional words
-      const additionalList = document.getElementById('additional-words-list');
-      if (dayData.additional.length > 0) {
-        document.getElementById('additional-words').classList.remove('hidden');
-        additionalList.innerHTML = dayData.additional.map(word => `
-          <span class="px-4 py-2 rounded-full bg-purple-800/50 text-purple-200 text-sm border border-purple-600/30">${word}</span>
-        `).join('');
+      words.forEach((word, index) => {
+        const progress = userProgress.find(p => p.word_id === word.word);
+        const mastered = progress && progress.correct_count > progress.wrong_count;
+        
+        const card = document.createElement('div');
+        card.className = `word-card card-glass rounded-2xl p-5 border-2 border-transparent transition-all animate-slide`;
+        card.style.animationDelay = `${index * 0.05}s`;
+        
+        card.innerHTML = `
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <button onclick="speak('${word.word}')" class="speaker-btn text-2xl hover:scale-110 transition-transform" title="ฟังเสียง">
+                🔊
+              </button>
+              <div>
+                <h4 class="text-xl font-bold text-white">${word.word}</h4>
+                <p class="text-pink-400 font-medium">${word.thai}</p>
+              </div>
+            </div>
+            ${mastered ? '<span class="text-green-400 text-xl">✓</span>' : ''}
+          </div>
+          <div class="bg-white/5 rounded-xl p-4">
+            <p class="text-gray-300 mb-2">"${word.example}"</p>
+            <p class="text-sm text-gray-500">${word.exampleThai}</p>
+          </div>
+          <button onclick="speak('${word.example}')" class="mt-3 text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+            🔈 ฟังประโยคตัวอย่าง
+          </button>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    // Render quiz day selection
+    function renderQuizDaySelection() {
+      const container = document.getElementById('quiz-day-selection');
+      container.innerHTML = '';
+      
+      const allBtn = document.createElement('button');
+      allBtn.className = 'px-3 py-1 rounded-lg text-sm transition-all bg-pink-500/20 border border-pink-500';
+      allBtn.textContent = 'ทั้งหมด';
+      allBtn.onclick = () => toggleAllDays();
+      container.appendChild(allBtn);
+      
+      Object.entries(vocabularyData).forEach(([dayId, day]) => {
+        const btn = document.createElement('button');
+        btn.className = `day-select-btn px-3 py-1 rounded-lg text-sm transition-all ${selectedDays.includes(dayId) ? 'bg-pink-500/20 border border-pink-500' : 'bg-white/10 border border-white/20'}`;
+        btn.dataset.day = dayId;
+        btn.textContent = day.title.split(':')[0];
+        btn.onclick = () => toggleDay(dayId);
+        container.appendChild(btn);
+      });
+    }
+
+    function toggleDay(dayId) {
+      const index = selectedDays.indexOf(dayId);
+      if (index > -1) {
+        if (selectedDays.length > 1) {
+          selectedDays.splice(index, 1);
+        }
       } else {
-        document.getElementById('additional-words').classList.add('hidden');
+        selectedDays.push(dayId);
       }
+      updateDaySelectionUI();
+    }
+
+    function toggleAllDays() {
+      if (selectedDays.length === Object.keys(vocabularyData).length) {
+        selectedDays = ['day1-2'];
+      } else {
+        selectedDays = Object.keys(vocabularyData);
+      }
+      updateDaySelectionUI();
+    }
+
+    function updateDaySelectionUI() {
+      document.querySelectorAll('.day-select-btn').forEach(btn => {
+        const dayId = btn.dataset.day;
+        if (selectedDays.includes(dayId)) {
+          btn.className = 'day-select-btn px-3 py-1 rounded-lg text-sm transition-all bg-pink-500/20 border border-pink-500';
+        } else {
+          btn.className = 'day-select-btn px-3 py-1 rounded-lg text-sm transition-all bg-white/10 border border-white/20';
+        }
+      });
+    }
+
+    function setQuizCount(count) {
+      quizCount = count;
+      document.querySelectorAll('.quiz-count-btn').forEach(btn => {
+        btn.className = 'quiz-count-btn px-4 py-2 rounded-lg ' + 
+          (btn.textContent.includes(count) || (count === 30 && btn.textContent.includes('ทั้งหมด')) 
+            ? 'bg-pink-500/20 border border-pink-500' 
+            : 'bg-white/10 border border-white/20');
+      });
+    }
+
+    // Generate TOEIC-style questions
+    function generateQuestions() {
+      const allWords = [];
+      selectedDays.forEach(dayId => {
+        allWords.push(...vocabularyData[dayId].words);
+      });
       
-      updateProgress();
+      // Shuffle words
+      const shuffled = allWords.sort(() => Math.random() - 0.5);
+      const questionWords = shuffled.slice(0, Math.min(quizCount, shuffled.length));
+      
+      return questionWords.map(word => {
+        const questionType = Math.random() > 0.5 ? 'fill-blank' : 'meaning';
+        
+        if (questionType === 'fill-blank') {
+          // Fill in the blank question
+          const sentence = word.example.replace(new RegExp(word.word, 'gi'), '_______');
+          const wrongOptions = allWords
+            .filter(w => w.word !== word.word)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 3)
+            .map(w => w.word);
+          
+          const options = [...wrongOptions, word.word].sort(() => Math.random() - 0.5);
+          
+          return {
+            type: 'fill-blank',
+            question: 'เลือกคำที่เหมาะสมที่สุดเติมในช่องว่าง:',
+            sentence: sentence,
+            options: options,
+            correct: word.word,
+            meaning: `${word.word} = ${word.thai}`,
+            fullWord: word
+          };
+        } else {
+          // Meaning question
+          const wrongOptions = allWords
+            .filter(w => w.word !== word.word)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 3)
+            .map(w => w.thai);
+          
+          const options = [...wrongOptions, word.thai].sort(() => Math.random() - 0.5);
+          
+          return {
+            type: 'meaning',
+            question: `"${word.word}" หมายถึงอะไร?`,
+            sentence: word.example,
+            options: options,
+            correct: word.thai,
+            meaning: `${word.word} = ${word.thai}`,
+            fullWord: word
+          };
+        }
+      });
     }
 
-    // Flip Card
-    function flipCard(card) {
-      const inner = card.querySelector('.card-inner');
-      inner.classList.toggle('flipped');
-    }
-
-    // Shuffle Current Day
-    function shuffleCurrentDay() {
-      const dayData = vocabularyData[currentDay];
-      dayData.words.sort(() => Math.random() - 0.5);
-      renderCurrentView();
-      showToast("สลับการ์ดแล้ว! 🔀");
-    }
-
-    // Quiz Functions
+    // Start quiz
     function startQuiz() {
-      const allWords = vocabularyData.flatMap(day => day.words);
-      quizQuestions = allWords.sort(() => Math.random() - 0.5).slice(0, 10);
-      currentQuizIndex = 0;
+      quizQuestions = generateQuestions();
+      currentQuestionIndex = 0;
       quizScore = 0;
       
-      document.getElementById('quiz-card').classList.remove('hidden');
+      document.getElementById('quiz-setup').classList.add('hidden');
+      document.getElementById('quiz-progress').classList.remove('hidden');
       document.getElementById('quiz-result').classList.add('hidden');
       
-      renderQuizQuestion();
+      showQuestion();
     }
 
-    function renderQuizQuestion() {
-      const question = quizQuestions[currentQuizIndex];
-      const allMeanings = vocabularyData.flatMap(day => day.words.map(w => w.meaning));
+    // Show current question
+    function showQuestion() {
+      const question = quizQuestions[currentQuestionIndex];
       
-      // Get wrong answers
-      let options = [question.meaning];
-      while (options.length < 4) {
-        const randomMeaning = allMeanings[Math.floor(Math.random() * allMeanings.length)];
-        if (!options.includes(randomMeaning)) {
-          options.push(randomMeaning);
-        }
-      }
-      options.sort(() => Math.random() - 0.5);
+      document.getElementById('quiz-counter').textContent = `ข้อ ${currentQuestionIndex + 1}/${quizQuestions.length}`;
+      document.getElementById('quiz-score').textContent = `คะแนน: ${quizScore}`;
+      document.getElementById('quiz-progress-bar').style.width = `${(currentQuestionIndex / quizQuestions.length) * 100}%`;
       
-      document.getElementById('quiz-progress').textContent = `ข้อ ${currentQuizIndex + 1}/10`;
-      document.getElementById('quiz-question').innerHTML = `คำว่า "<span class="text-amber-400 font-bold">${question.word}</span>" มีความหมายว่าอะไร?`;
+      document.getElementById('quiz-question').querySelector('p').textContent = question.question;
+      document.getElementById('quiz-sentence').textContent = question.sentence;
       
       const optionsContainer = document.getElementById('quiz-options');
-      optionsContainer.innerHTML = options.map((opt, i) => `
-        <button onclick="selectAnswer('${opt.replace(/'/g, "\\'")}')" class="quiz-option w-full p-4 rounded-xl bg-purple-800/30 border border-purple-500/30 text-left hover:bg-purple-700/40 hover:border-amber-500/50 transition-all text-purple-100">
-          <span class="text-amber-400 font-semibold mr-3">${String.fromCharCode(65 + i)}.</span> ${opt}
-        </button>
-      `).join('');
+      optionsContainer.innerHTML = '';
+      
+      question.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn p-4 rounded-xl text-left border-2 border-white/20 bg-white/5 transition-all';
+        btn.innerHTML = `<span class="text-gray-400 mr-2">${String.fromCharCode(65 + index)}.</span> ${option}`;
+        btn.onclick = () => selectAnswer(option, btn);
+        optionsContainer.appendChild(btn);
+      });
       
       document.getElementById('quiz-feedback').classList.add('hidden');
+      document.getElementById('next-question-btn').classList.add('hidden');
     }
 
-    function selectAnswer(answer) {
-      const question = quizQuestions[currentQuizIndex];
-      const isCorrect = answer === question.meaning;
-      const feedback = document.getElementById('quiz-feedback');
+    // Select answer
+    async function selectAnswer(answer, btnElement) {
+      const question = quizQuestions[currentQuestionIndex];
+      const isCorrect = answer === question.correct;
       
-      if (isCorrect) {
-        quizScore++;
-        feedback.className = 'mt-6 p-4 rounded-xl text-center bg-green-900/50 border border-green-500/30';
-        feedback.innerHTML = '<span class="text-green-400 text-lg">✓ ถูกต้อง! เก่งมาก! 🎉</span>';
-      } else {
-        feedback.className = 'mt-6 p-4 rounded-xl text-center bg-red-900/50 border border-red-500/30';
-        feedback.innerHTML = `<span class="text-red-400">✗ ไม่ถูกต้อง</span><br><span class="text-purple-300 text-sm">คำตอบที่ถูกคือ: ${question.meaning}</span>`;
-      }
-      feedback.classList.remove('hidden');
-      
-      // Disable all options
-      document.querySelectorAll('.quiz-option').forEach(btn => {
+      // Disable all buttons
+      document.querySelectorAll('.option-btn').forEach(btn => {
         btn.disabled = true;
-        if (btn.textContent.includes(question.meaning)) {
-          btn.classList.add('border-green-500', 'bg-green-900/30');
+        if (btn.textContent.includes(question.correct)) {
+          btn.classList.add('correct');
         }
       });
       
-      // Next question after delay
-      setTimeout(() => {
-        currentQuizIndex++;
-        if (currentQuizIndex < quizQuestions.length) {
-          renderQuizQuestion();
-        } else {
-          showQuizResult();
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        quizScore++;
+        totalCorrect++;
+        document.getElementById('quiz-score').textContent = `คะแนน: ${quizScore}`;
+      } else {
+        btnElement.classList.add('wrong');
+      }
+      
+      // Show feedback
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.classList.remove('hidden');
+      feedback.className = `p-4 rounded-xl mb-4 ${isCorrect ? 'bg-green-500/20' : 'bg-red-500/20'}`;
+      document.getElementById('feedback-text').textContent = isCorrect ? '✓ ถูกต้อง!' : '✗ ผิด';
+      document.getElementById('feedback-meaning').textContent = question.meaning;
+      
+      // Speak the word
+      speak(question.fullWord.word);
+      
+      // Save progress
+      await saveProgress(question.fullWord.word, isCorrect);
+      
+      document.getElementById('next-question-btn').classList.remove('hidden');
+      updateStreakDisplay();
+    }
+
+    // Save progress to Data SDK
+    async function saveProgress(wordId, isCorrect) {
+      if (!window.dataSdk) return;
+      
+      const existing = userProgress.find(p => p.word_id === wordId);
+      
+      if (existing) {
+        const updated = {
+          ...existing,
+          correct_count: isCorrect ? existing.correct_count + 1 : existing.correct_count,
+          wrong_count: isCorrect ? existing.wrong_count : existing.wrong_count + 1,
+          last_practiced: new Date().toISOString()
+        };
+        await window.dataSdk.update(updated);
+      } else {
+        if (userProgress.length >= 999) {
+          console.warn('Data limit reached');
+          return;
         }
-      }, 1500);
+        await window.dataSdk.create({
+          word_id: wordId,
+          correct_count: isCorrect ? 1 : 0,
+          wrong_count: isCorrect ? 0 : 1,
+          last_practiced: new Date().toISOString()
+        });
+      }
     }
 
-    function showQuizResult() {
-      document.getElementById('quiz-card').classList.add('hidden');
+    // Next question
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizQuestions.length) {
+        showQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    // Show result
+    function showResult() {
+      document.getElementById('quiz-progress').classList.add('hidden');
       document.getElementById('quiz-result').classList.remove('hidden');
-      document.getElementById('result-score').textContent = `คุณตอบถูก ${quizScore}/10 ข้อ (${quizScore * 10}%)`;
+      
+      const percentage = Math.round((quizScore / quizQuestions.length) * 100);
+      document.getElementById('result-score').textContent = `${quizScore}/${quizQuestions.length}`;
+      document.getElementById('result-percentage').textContent = `ทำได้ ${percentage}%`;
     }
 
-    // Toast Notification
-    function showToast(message) {
-      const toast = document.createElement('div');
-      toast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full bg-amber-500 text-slate-900 font-medium shadow-lg z-50 animate-slide';
-      toast.textContent = message;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
+    // Reset quiz
+    function resetQuiz() {
+      document.getElementById('quiz-setup').classList.remove('hidden');
+      document.getElementById('quiz-progress').classList.add('hidden');
+      document.getElementById('quiz-result').classList.add('hidden');
     }
 
-    // Initialize
-    renderCurrentView();
-    applyConfig();
+    // Update stats view
+    function updateStats() {
+      const totalCorrectCount = userProgress.reduce((sum, p) => sum + p.correct_count, 0);
+      const totalWrongCount = userProgress.reduce((sum, p) => sum + p.wrong_count, 0);
+      const total = totalCorrectCount + totalWrongCount;
+      const accuracy = total > 0 ? Math.round((totalCorrectCount / total) * 100) : 0;
+      
+      document.getElementById('stat-correct').textContent = totalCorrectCount;
+      document.getElementById('stat-wrong').textContent = totalWrongCount;
+      document.getElementById('stat-total').textContent = userProgress.length;
+      document.getElementById('stat-accuracy').textContent = `${accuracy}%`;
+      
+      // Show weak words
+      const weakWords = userProgress
+        .filter(p => p.wrong_count > p.correct_count)
+        .sort((a, b) => (b.wrong_count - b.correct_count) - (a.wrong_count - a.correct_count))
+        .slice(0, 5);
+      
+      const weakWordsContainer = document.getElementById('weak-words');
+      if (weakWords.length > 0) {
+        weakWordsContainer.innerHTML = weakWords.map(p => {
+          const wordData = findWordData(p.word_id);
+          return `
+            <div class="card-glass rounded-xl p-3 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <button onclick="speak('${p.word_id}')" class="speaker-btn">🔊</button>
+                <div>
+                  <span class="font-medium">${p.word_id}</span>
+                  <span class="text-sm text-gray-400 ml-2">${wordData ? wordData.thai : ''}</span>
+                </div>
+              </div>
+              <span class="text-red-400 text-sm">${p.wrong_count} ผิด / ${p.correct_count} ถูก</span>
+            </div>
+          `;
+        }).join('');
+      } else {
+        weakWordsContainer.innerHTML = '<p class="text-gray-400">ยังไม่มีข้อมูล - ลองทำแบบทดสอบดูนะ!</p>';
+      }
+      
+      renderDaysGrid();
+    }
+
+    // Find word data by word
+    function findWordData(wordId) {
+      for (const day of Object.values(vocabularyData)) {
+        const word = day.words.find(w => w.word === wordId);
+        if (word) return word;
+      }
+      return null;
+    }
+
+    // Update streak display
+    function updateStreakDisplay() {
+      const totalCorrectCount = userProgress.reduce((sum, p) => sum + p.correct_count, 0);
+      document.getElementById('streak-display').textContent = `🔥 ${totalCorrectCount} คำถูก`;
+    }
+
+    // Show view
+    function showView(view) {
+      currentView = view;
+      
+      document.getElementById('home-view').classList.add('hidden');
+      document.getElementById('learn-view').classList.add('hidden');
+      document.getElementById('quiz-view').classList.add('hidden');
+      document.getElementById('stats-view').classList.add('hidden');
+      
+      document.getElementById(`${view}-view`).classList.remove('hidden');
+      document.getElementById(`${view}-view`).classList.add('animate-fade');
+      
+      // Update nav tabs
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        if (tab.dataset.view === view) {
+          tab.className = 'nav-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all bg-pink-500/20 border border-pink-500/50';
+        } else {
+          tab.className = 'nav-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all bg-white/10 border border-white/20';
+        }
+      });
+      
+      if (view === 'stats') {
+        updateStats();
+      }
+      
+      if (view === 'learn' && !currentDay) {
+        openDay('day1-2');
+      }
+    }
+
+    // Initialize app
+    initApp();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d2fb7a4802287a5',t:'MTc3MTk0NDAxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d2fdeade345e60e',t:'MTc3MTk0NTYxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
