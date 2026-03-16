@@ -1,0 +1,422 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Machine Learning สำหรับวิศวกร</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Mitr:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#ffffff;--bg-soft:#f7f8fb;--bg-mid:#eef1f7;
+  --border:#e2e6ef;--border2:#ccd2e0;
+  --text:#111827;--text-2:#374151;--muted:#6b7280;--dim:#9ca3af;
+  --blue:#2563eb;--blue-dk:#1d4ed8;--blue-bg:#eff6ff;--blue-border:#bfdbfe;
+  --teal:#0d9488;--teal-dk:#0f766e;--teal-bg:#f0fdfa;--teal-border:#99f6e4;
+  --purple:#7c3aed;--purple-dk:#6d28d9;--purple-bg:#f5f3ff;--purple-border:#ddd6fe;
+  --amber:#d97706;--amber-bg:#fffbeb;--amber-border:#fde68a;
+  --coral:#ea580c;--coral-bg:#fff7ed;--coral-border:#fed7aa;
+  --green:#16a34a;--red:#dc2626;
+  --fd:'Mitr','Sarabun',sans-serif;--fb:'Sarabun',sans-serif;--fm:'IBM Plex Mono',monospace;
+  --r:10px;--rs:6px;--rl:16px;
+  --s0:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --s1:0 4px 12px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.04);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased}
+nav{position:sticky;top:0;z-index:200;height:54px;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;box-shadow:var(--s0)}
+.nl{font-family:var(--fd);font-size:16px;font-weight:700;color:var(--blue)}.nl span{color:var(--teal)}
+.nls{display:flex;gap:2px}
+.nls a{color:var(--muted);text-decoration:none;font-size:12px;font-weight:500;padding:5px 10px;border-radius:var(--rs);transition:color .15s,background .15s}
+.nls a:hover{color:var(--text);background:var(--bg-mid)}
+.hero{padding:80px 1.5rem 60px;text-align:center;background:linear-gradient(180deg,#f0f6ff 0%,#fff 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero-dots{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(var(--border2) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,black 0%,transparent 100%);opacity:.5}
+.hbadge{display:inline-flex;align-items:center;gap:7px;background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue-dk);font-size:11px;font-weight:600;padding:5px 14px;border-radius:99px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1.25rem;animation:fu .5s ease both}
+.hero h1{font-family:var(--fd);font-size:clamp(1.9rem,4.5vw,3.2rem);font-weight:700;line-height:1.2;letter-spacing:-.02em;margin-bottom:1rem;animation:fu .5s .08s ease both}
+.hero h1 em{font-style:normal;color:var(--blue)}
+.hsub{font-size:.95rem;color:var(--muted);max-width:480px;margin:0 auto 2rem;animation:fu .5s .16s ease both}
+.hchips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;animation:fu .5s .24s ease both}
+.hchip{background:var(--bg);border:1px solid var(--border2);color:var(--text-2);font-size:12px;font-weight:500;padding:6px 14px;border-radius:var(--rs);box-shadow:var(--s0)}
+.hchip b{color:var(--blue)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 1.5rem}
+section{padding:60px 0}
+section+section{border-top:1px solid var(--border)}
+.sl{font-family:var(--fm);font-size:10px;font-weight:500;color:var(--blue);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.4rem}
+.st{font-family:var(--fd);font-size:clamp(1.4rem,2.8vw,2rem);font-weight:700;line-height:1.2;letter-spacing:-.02em;margin-bottom:.75rem}
+.sd{font-size:.9rem;color:var(--muted);max-width:540px;margin-bottom:2rem}
+.rv{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+.rv.on{opacity:1;transform:none}
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;border:1px solid}
+.tag.bl{background:var(--blue-bg);color:var(--blue-dk);border-color:var(--blue-border)}
+.tag.tl{background:var(--teal-bg);color:var(--teal-dk);border-color:var(--teal-border)}
+.tag.pu{background:var(--purple-bg);color:var(--purple-dk);border-color:var(--purple-border)}
+.tag.am{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)}
+.tag.co{background:var(--coral-bg);color:var(--coral);border-color:var(--coral-border)}
+/* concept cards */
+.cg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:2rem}
+.cc{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;box-shadow:var(--s0);position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s}
+.cc:hover{box-shadow:var(--s1);transform:translateY(-2px)}
+.cc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--rl) var(--rl) 0 0}
+.cc.ai::after{background:linear-gradient(90deg,var(--blue),#60a5fa)}
+.cc.ml::after{background:linear-gradient(90deg,var(--teal),#34d399)}
+.cc.dl::after{background:linear-gradient(90deg,var(--purple),#a78bfa)}
+.cn{font-family:var(--fm);font-size:9px;color:var(--dim);margin-bottom:.6rem}
+.cm{font-family:var(--fd);font-size:1.2rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.2rem}
+.cc.ai .cm{color:var(--blue-dk)}.cc.ml .cm{color:var(--teal-dk)}.cc.dl .cm{color:var(--purple-dk)}
+.ca{font-size:.75rem;color:var(--muted);margin-bottom:.85rem}
+.cdesc{font-size:.82rem;color:var(--text-2);line-height:1.7;margin-bottom:1rem}
+.ctags{display:flex;flex-wrap:wrap;gap:4px}
+/* nesting */
+.nout{border:1.5px solid var(--blue-border);background:var(--blue-bg);border-radius:var(--rl);padding:1.25rem;margin-bottom:2rem}
+.nmid{border:1.5px solid var(--teal-border);background:var(--teal-bg);border-radius:var(--r);padding:1.1rem;margin-top:.85rem}
+.ninn{border:1.5px solid var(--purple-border);background:var(--purple-bg);border-radius:var(--rs);padding:.95rem;margin-top:.85rem}
+.nlb{font-family:var(--fd);font-size:.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.5rem}
+.nout .nlb{color:var(--blue-dk)}.nmid .nlb{color:var(--teal-dk)}.ninn .nlb{color:var(--purple-dk)}
+.nsub{font-size:.77rem;color:var(--muted);margin-bottom:.65rem}
+.ntags{display:flex;flex-wrap:wrap;gap:4px}
+/* table */
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--s0)}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+thead th{background:var(--bg-soft);padding:10px 14px;text-align:left;font-family:var(--fd);font-weight:600;color:var(--text-2);font-size:.76rem;letter-spacing:.03em;border-bottom:1px solid var(--border)}
+tbody td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-2)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--bg-soft)}
+td.rl{color:var(--muted);font-size:.78rem;font-weight:500;white-space:nowrap}
+.pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid}
+.pill.ye{background:#f0fdf4;color:#15803d;border-color:#bbf7d0}
+.pill.no{background:#fef2f2;color:#b91c1c;border-color:#fecaca}
+/* type cards */
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tc{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;box-shadow:var(--s0);transition:box-shadow .2s,transform .2s}
+.tc:hover{box-shadow:var(--s1);transform:translateY(-2px)}
+.tc.su{border-top:3px solid var(--blue)}.tc.un{border-top:3px solid var(--teal)}.tc.rl2{border-top:3px solid var(--purple)}
+.tbadge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:4px;margin-bottom:.6rem;border:1px solid}
+.su .tbadge{background:var(--blue-bg);color:var(--blue-dk);border-color:var(--blue-border)}
+.un .tbadge{background:var(--teal-bg);color:var(--teal-dk);border-color:var(--teal-border)}
+.rl2 .tbadge{background:var(--purple-bg);color:var(--purple-dk);border-color:var(--purple-border)}
+.tn{font-family:var(--fd);font-size:1.05rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.3rem}
+.su .tn{color:var(--blue-dk)}.un .tn{color:var(--teal-dk)}.rl2 .tn{color:var(--purple-dk)}
+.tdesc{font-size:.8rem;color:var(--text-2);line-height:1.65;margin-bottom:.85rem}
+.tana{font-size:.78rem;color:var(--muted);padding:.6rem .85rem;border-radius:var(--rs);margin-bottom:.85rem;border-left:3px solid}
+.su .tana{background:var(--blue-bg);border-left-color:var(--blue)}
+.un .tana{background:var(--teal-bg);border-left-color:var(--teal)}
+.rl2 .tana{background:var(--purple-bg);border-left-color:var(--purple)}
+.tana b{color:var(--text)}
+.slb{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:.4rem}
+.tr2{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.85rem}
+.ul2{list-style:none}
+.ul2 li{font-size:.78rem;color:var(--muted);padding:3px 0;border-bottom:1px solid var(--border);display:flex;gap:6px}
+.ul2 li:last-child{border-bottom:none}
+.ul2 li::before{content:'→';color:var(--dim);flex-shrink:0}
+/* steps */
+.stps{display:flex;flex-direction:column}
+.stp{display:flex;gap:1.1rem}
+.stpl{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.stpd{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:11px;font-weight:500;flex-shrink:0;border:1.5px solid}
+.stpd.bl{background:var(--blue-bg);color:var(--blue-dk);border-color:var(--blue-border)}
+.stpd.tl{background:var(--teal-bg);color:var(--teal-dk);border-color:var(--teal-border)}
+.stpd.rd{background:#fef2f2;color:var(--red);border-color:#fecaca}
+.stpd.am{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)}
+.stpln{width:1.5px;background:var(--border2);flex-grow:1;min-height:18px;margin:3px 0}
+.stpb{padding-bottom:1.5rem}
+.stpt{font-weight:600;font-size:.88rem;color:var(--text);margin-bottom:.25rem}
+.stpds{font-size:.8rem;color:var(--muted);line-height:1.6}
+.stpc{margin-top:.55rem;background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--rs);padding:.55rem .85rem;font-family:var(--fm);font-size:11px;color:var(--teal-dk)}
+/* detail split */
+.ds{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dc{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;box-shadow:var(--s0)}
+.dct{font-family:var(--fd);font-size:1rem;font-weight:700;margin-bottom:.25rem}
+.dc.cl .dct{color:var(--blue-dk)}.dc.rg .dct{color:var(--teal-dk)}
+.dcs{font-size:.77rem;color:var(--muted);margin-bottom:1rem}
+.sv{height:150px;background:var(--bg-soft);border-radius:var(--rs);border:1px solid var(--border);margin-bottom:.85rem;position:relative;overflow:hidden}
+.sd2{position:absolute;width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%)}
+.sb{position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--red);opacity:.45;transform:translateX(-50%)}
+.rv2{height:150px;background:var(--bg-soft);border-radius:var(--rs);border:1px solid var(--border);margin-bottom:.85rem;overflow:hidden}
+.rv2 svg{width:100%;height:100%}
+/* unsupervised */
+.ug{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.uc{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;box-shadow:var(--s0);transition:box-shadow .2s}
+.uc:hover{box-shadow:var(--s1)}
+.uct{font-family:var(--fd);font-size:.98rem;font-weight:700;color:var(--teal-dk);margin-bottom:.25rem}
+.ucs{font-size:.77rem;color:var(--muted);margin-bottom:.95rem}
+.cv{height:140px;background:var(--bg-soft);border-radius:var(--rs);border:1px solid var(--border);margin-bottom:.85rem;position:relative;overflow:hidden}
+.cd{position:absolute;width:7px;height:7px;border-radius:50%;transform:translate(-50%,-50%)}
+.cr{position:absolute;border-radius:50%;border:1.5px dashed;opacity:.38;transform:translate(-50%,-50%)}
+/* engineering */
+.eg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ec{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;box-shadow:var(--s0);transition:box-shadow .2s,transform .2s}
+.ec:hover{box-shadow:var(--s1);transform:translateY(-2px)}
+.ei{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:.75rem}
+.ef{font-size:.68rem;font-weight:700;color:var(--dim);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.15rem}
+.etl{font-weight:600;font-size:.85rem;color:var(--text);margin-bottom:.6rem}
+.eli{list-style:none}
+.eli li{font-size:.76rem;color:var(--muted);padding:2px 0;display:flex;gap:5px}
+.eli li::before{content:'·';color:var(--border2)}
+/* lifecycle */
+.lc{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:1.75rem;margin-bottom:.6rem}
+.lci{text-align:center;border-radius:var(--rs);padding:.8rem .4rem;border:1px solid;font-size:10px;font-weight:600}
+.lci .lcn{font-family:var(--fd);font-size:12px;font-weight:700;margin-bottom:2px}
+.lci .lct{font-size:9px;font-weight:400}
+/* algo */
+.as{margin-bottom:2rem}
+.ast{font-family:var(--fd);font-size:.95rem;font-weight:700;padding-bottom:.5rem;margin-bottom:.85rem;border-bottom:1.5px solid var(--border)}
+.ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:8px}
+.ac{background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--rs);padding:.8rem 1rem;transition:border-color .2s}
+.ac:hover{border-color:var(--border2)}
+.an{font-weight:600;font-size:.82rem;color:var(--text);margin-bottom:.2rem}
+.au{font-size:.74rem;color:var(--muted);line-height:1.5}
+/* summary */
+.sb2{background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--rl);padding:2rem;text-align:center;box-shadow:var(--s0)}
+.sbt{font-family:var(--fd);font-size:1.4rem;font-weight:700;margin-bottom:.65rem}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:1.5rem}
+.si{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:1rem}
+.snum{font-family:var(--fd);font-size:2rem;font-weight:700;line-height:1;margin-bottom:.25rem}
+.slbl{font-size:.76rem;color:var(--muted);line-height:1.5}
+.tip{margin-top:1.25rem;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--rs);padding:.85rem 1.1rem;font-size:.82rem;color:var(--text-2);line-height:1.6}
+.tip b{color:var(--amber)}
+footer{background:var(--bg-soft);border-top:1px solid var(--border);padding:1.5rem;text-align:center;color:var(--dim);font-size:.77rem}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg-soft)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+@media(max-width:720px){.cg,.tg,.ds,.ug,.eg{grid-template-columns:1fr}.lc{grid-template-columns:repeat(3,1fr)}.nls{display:none}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nl">ML <span>×</span> Engineering</div>
+  <div class="nls">
+    <a href="#s1">แนวคิด</a><a href="#s2">ประเภท ML</a>
+    <a href="#s3">Supervised</a><a href="#s4">Unsupervised</a>
+    <a href="#s5">วิศวกรรม</a><a href="#s6">Algorithms</a>
+  </div>
+</nav>
+<div class="hero">
+  <div class="hero-dots"></div>
+  <div class="hbadge">📚 คู่มือ Machine Learning สำหรับนักศึกษา</div>
+  <h1>AI · ML · <em>Deep Learning</em><br>และบทบาทในงานวิศวกรรม</h1>
+  <p class="hsub">เรียนรู้ตั้งแต่พื้นฐานสู่การประยุกต์ใช้จริง ครบทุกหัวข้อ เข้าใจง่าย สำหรับนักศึกษาและผู้เริ่มต้น</p>
+  <div class="hchips">
+    <div class="hchip"><b>5</b> หัวข้อหลัก</div>
+    <div class="hchip"><b>3</b> ประเภทของ ML</div>
+    <div class="hchip"><b>6</b> สาขาวิศวกรรม</div>
+    <div class="hchip"><b>20+</b> Algorithm</div>
+  </div>
+</div>
+
+<section id="s1"><div class="wrap">
+  <div class="sl rv">01 — ความแตกต่าง</div>
+  <h2 class="st rv">AI vs ML vs Deep Learning</h2>
+  <p class="sd rv">ทั้งสามซ้อนกันเหมือน matryoshka doll — AI ใหญ่ที่สุด ML อยู่ข้างใน และ Deep Learning อยู่ในสุด</p>
+  <div class="cg rv">
+    <div class="cc ai"><div class="cn">01 / 03</div><div class="cm">Artificial Intelligence</div><div class="ca">ปัญญาประดิษฐ์ — กว้างที่สุด</div><div class="cdesc">ระบบที่จำลองความฉลาดของมนุษย์ ครอบคลุมทุกวิธีทั้ง rule-based และ learning-based</div><div class="ctags"><span class="tag bl">Expert Systems</span><span class="tag bl">Rule-based AI</span><span class="tag bl">Game AI</span><span class="tag bl">Robotics</span></div></div>
+    <div class="cc ml"><div class="cn">02 / 03</div><div class="cm">Machine Learning</div><div class="ca">การเรียนรู้ของเครื่อง — subset ของ AI</div><div class="cdesc">ให้คอมพิวเตอร์เรียนรู้จากข้อมูลโดยไม่ต้อง hard-code ทุก logic โมเดลค้นหา pattern แล้วนำไปใช้กับข้อมูลใหม่</div><div class="ctags"><span class="tag tl">Decision Tree</span><span class="tag tl">Random Forest</span><span class="tag tl">SVM</span><span class="tag tl">k-Means</span></div></div>
+    <div class="cc dl"><div class="cn">03 / 03</div><div class="cm">Deep Learning</div><div class="ca">เรียนรู้เชิงลึก — subset ของ ML</div><div class="cdesc">Neural Network หลายชั้น เรียนรู้ feature อัตโนมัติ ต้องการ data และ GPU สูง แต่โดดเด่นในงานภาพ เสียง และภาษา</div><div class="ctags"><span class="tag pu">CNN</span><span class="tag pu">Transformer</span><span class="tag pu">GPT / Claude</span><span class="tag pu">YOLO</span></div></div>
+  </div>
+  <div class="nout rv">
+    <div class="nlb">🔵 Artificial Intelligence</div><div class="nsub">ครอบคลุมทุกวิธีที่ทำให้เครื่องจักรแสดงความฉลาด ทั้ง rule-based และ learning-based</div>
+    <div class="nmid"><div class="nlb">🟢 Machine Learning — เรียนรู้จากข้อมูล</div><div class="nsub">ต้องการ data + algorithm ไม่ต้อง hard-code ทุก logic</div>
+      <div class="ninn"><div class="nlb">🟣 Deep Learning — Neural Networks หลายชั้น</div><div class="nsub">สกัด feature อัตโนมัติ ต้องการ GPU/TPU และข้อมูลจำนวนมาก</div><div class="ntags"><span class="tag pu">CNN (ภาพ)</span><span class="tag pu">RNN (ลำดับเวลา)</span><span class="tag pu">Transformer (NLP)</span><span class="tag pu">GAN (สร้างข้อมูล)</span><span class="tag pu">Diffusion (ภาพ AI)</span></div></div>
+    </div>
+  </div>
+  <div class="tw rv"><table>
+    <thead><tr><th>ลักษณะ</th><th style="color:var(--blue-dk)">AI</th><th style="color:var(--teal-dk)">ML</th><th style="color:var(--purple-dk)">Deep Learning</th></tr></thead>
+    <tbody>
+      <tr><td class="rl">ต้องการข้อมูล</td><td>น้อย–มาก</td><td>ปานกลาง</td><td style="font-weight:600;color:var(--purple-dk)">ต้องการมาก</td></tr>
+      <tr><td class="rl">Feature extraction</td><td>มนุษย์กำหนด</td><td>มนุษย์กำหนด</td><td style="font-weight:600;color:var(--purple-dk)">อัตโนมัติ</td></tr>
+      <tr><td class="rl">Compute ที่ต้องการ</td><td>ต่ำ–สูง</td><td>ปานกลาง</td><td style="font-weight:600;color:var(--purple-dk)">สูงมาก (GPU/TPU)</td></tr>
+      <tr><td class="rl">ขอบเขต</td><td style="font-weight:600;color:var(--blue-dk)">กว้างที่สุด</td><td>กว้างปานกลาง</td><td>แคบ / เฉพาะทาง</td></tr>
+      <tr><td class="rl">ตีความผลได้</td><td>ขึ้นกับวิธี</td><td>บางวิธีตีความได้</td><td style="color:var(--amber)">ยาก (black box)</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section id="s2"><div class="wrap">
+  <div class="sl rv">02 — ประเภท</div>
+  <h2 class="st rv">3 ประเภทหลักของ Machine Learning</h2>
+  <p class="sd rv">แบ่งตามลักษณะของข้อมูลและวิธีที่โมเดลเรียนรู้</p>
+  <div class="tg rv">
+    <div class="tc su"><div class="tbadge">ประเภทที่ 1</div><div class="tn">Supervised Learning</div><div class="tdesc">เรียนรู้จากข้อมูลที่มี label กำกับแล้ว โมเดลเรียนรู้ mapping ระหว่าง input → output ที่ถูกต้อง</div><div class="tana"><b>อุปมา:</b> เหมือนนักเรียนที่มีครูคอยบอก "ถูก" หรือ "ผิด" ทุกข้อ</div><div class="slb">Algorithm</div><div class="tr2"><span class="tag bl">Linear Regression</span><span class="tag bl">Logistic Regression</span><span class="tag bl">Decision Tree</span><span class="tag bl">Random Forest</span><span class="tag bl">SVM</span><span class="tag bl">XGBoost</span><span class="tag bl">Neural Network</span></div><div class="slb">ตัวอย่างงาน</div><ul class="ul2"><li>ทำนายอายุใช้งานชิ้นส่วน</li><li>แยกของดี/ของเสียจากภาพ</li><li>พยากรณ์กำลังไฟฟ้า</li><li>วินิจฉัยความผิดปกติเครื่องจักร</li></ul></div>
+    <div class="tc un"><div class="tbadge">ประเภทที่ 2</div><div class="tn">Unsupervised Learning</div><div class="tdesc">ไม่มี label โมเดลค้นหาโครงสร้างหรือ pattern ที่ซ่อนอยู่ใน data เอง</div><div class="tana"><b>อุปมา:</b> เหมือนนักสำรวจที่ต้องทำแผนที่เองโดยไม่มีคู่มือ</div><div class="slb">Algorithm</div><div class="tr2"><span class="tag tl">K-Means</span><span class="tag tl">DBSCAN</span><span class="tag tl">Hierarchical</span><span class="tag tl">PCA</span><span class="tag tl">t-SNE</span><span class="tag tl">Autoencoder</span><span class="tag tl">Isolation Forest</span></div><div class="slb">ตัวอย่างงาน</div><ul class="ul2"><li>จัดกลุ่มพฤติกรรมการใช้ไฟฟ้า</li><li>ตรวจจับ anomaly ใน sensor</li><li>ลด noise ใน vibration data</li><li>หา failure mode ที่คล้ายกัน</li></ul></div>
+    <div class="tc rl2"><div class="tbadge">ประเภทที่ 3</div><div class="tn">Reinforcement Learning</div><div class="tdesc">Agent เรียนรู้โดยทดลองทำแล้วรับ reward หรือ penalty จาก environment</div><div class="tana"><b>อุปมา:</b> เหมือนสุนัขที่เรียนรู้ trick ผ่านการให้ขนม (reward)</div><div class="slb">Algorithm</div><div class="tr2"><span class="tag pu">Q-Learning</span><span class="tag pu">DQN</span><span class="tag pu">PPO</span><span class="tag pu">A3C</span><span class="tag pu">DDPG</span><span class="tag pu">SAC</span></div><div class="slb">ตัวอย่างงาน</div><ul class="ul2"><li>ควบคุม robot arm ในโรงงาน</li><li>บริหารพลังงานอาคาร (HVAC)</li><li>วางแผนเส้นทาง autonomous vehicle</li><li>ปรับแต่ง parameter การผลิต</li></ul></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:1rem" class="rv">
+    <div style="background:var(--amber-bg);border:1px dashed var(--amber-border);border-radius:var(--r);padding:1.1rem"><div style="font-family:var(--fd);font-weight:700;color:var(--amber);margin-bottom:.35rem">Semi-supervised Learning</div><div style="font-size:.8rem;color:var(--text-2);line-height:1.65">ใช้ข้อมูลที่มี label เพียงเล็กน้อยร่วมกับข้อมูล unlabeled จำนวนมาก เหมาะเมื่อการ label มีต้นทุนสูง เช่น ต้องให้ผู้เชี่ยวชาญตรวจสอบรอยบกพร่องทีละชิ้น</div></div>
+    <div style="background:var(--coral-bg);border:1px dashed var(--coral-border);border-radius:var(--r);padding:1.1rem"><div style="font-family:var(--fd);font-weight:700;color:var(--coral);margin-bottom:.35rem">Self-supervised Learning</div><div style="font-size:.8rem;color:var(--text-2);line-height:1.65">สร้าง label จากตัวข้อมูลเอง เช่น ซ่อนส่วนหนึ่งแล้วให้โมเดลทาย เป็นหัวใจของ LLM อย่าง GPT และ Claude</div></div>
+  </div>
+</div></section>
+
+<section id="s3"><div class="wrap">
+  <div class="sl rv">03 — รายละเอียด</div>
+  <h2 class="st rv">Supervised Learning เจาะลึก</h2>
+  <p class="sd rv">ประเภทที่ใช้บ่อยที่สุดในวิศวกรรม — เข้าใจกระบวนการ training และ 2 งานหลัก</p>
+  <div style="margin-bottom:2rem" class="rv">
+    <div style="font-family:var(--fd);font-size:.98rem;font-weight:700;margin-bottom:1rem">กระบวนการ Training</div>
+    <div class="stps">
+      <div class="stp"><div class="stpl"><div class="stpd bl">01</div><div class="stpln"></div></div><div class="stpb"><div class="stpt">รวบรวม Training Data (มี Label)</div><div class="stpds">ข้อมูลทุกชุดต้องมีทั้ง Input (X) และคำตอบที่ถูกต้อง (y) เช่น ภาพถ่ายชิ้นส่วน + ป้ายกำกับ "ดี" หรือ "เสีย"</div><div class="stpc">Dataset = [(X₁, y₁), (X₂, y₂), ..., (Xₙ, yₙ)]</div></div></div>
+      <div class="stp"><div class="stpl"><div class="stpd tl">02</div><div class="stpln"></div></div><div class="stpb"><div class="stpt">โมเดลทำนาย ŷ จาก X</div><div class="stpds">ในตอนแรกโมเดลยังไม่รู้ pattern — ค่าที่ทำนาย ŷ จะผิดพลาดมากในช่วง epoch แรก ๆ</div><div class="stpc">ŷ = model(X)  ← ทำนายด้วย weights ปัจจุบัน</div></div></div>
+      <div class="stp"><div class="stpl"><div class="stpd rd">03</div><div class="stpln"></div></div><div class="stpb"><div class="stpt">คำนวณ Loss (ความผิดพลาด)</div><div class="stpds">เปรียบเทียบ ŷ กับคำตอบจริง y แล้วคำนวณ Loss function เช่น MSE หรือ Cross-entropy</div><div class="stpc">Loss = Σ(ŷᵢ − yᵢ)²  ← MSE (mean squared error)</div></div></div>
+      <div class="stp"><div class="stpl"><div class="stpd am">04</div><div class="stpln"></div></div><div class="stpb"><div class="stpt">ปรับ Weights ด้วย Backpropagation</div><div class="stpds">คำนวณ gradient ของ Loss แล้วใช้ Gradient Descent ปรับ weights ให้ Loss ลดลง วนซ้ำหลาย epoch</div><div class="stpc">w ← w − α · ∇L(w)   ← α = learning rate</div></div></div>
+      <div class="stp"><div class="stpl"><div class="stpd bl">05</div></div><div class="stpb"><div class="stpt">ประเมินด้วย Test Data</div><div class="stpds">ทดสอบกับข้อมูลที่โมเดลไม่เคยเห็น วัด generalization ด้วย Accuracy, Precision, Recall, F1, RMSE</div></div></div>
+    </div>
+  </div>
+  <div style="font-family:var(--fd);font-size:.98rem;font-weight:700;margin-bottom:1rem" class="rv">2 งานหลักของ Supervised Learning</div>
+  <div class="ds rv">
+    <div class="dc cl">
+      <div class="dct">Classification — จำแนกประเภท</div><div class="dcs">Output คือ class หรือกลุ่มที่ไม่ต่อเนื่อง (discrete)</div>
+      <div class="sv">
+        <div class="sd2" style="left:22%;top:38%;background:var(--blue)"></div><div class="sd2" style="left:28%;top:55%;background:var(--blue)"></div><div class="sd2" style="left:17%;top:64%;background:var(--blue)"></div><div class="sd2" style="left:35%;top:44%;background:var(--blue)"></div><div class="sd2" style="left:24%;top:70%;background:var(--blue)"></div><div class="sd2" style="left:14%;top:50%;background:var(--blue)"></div><div class="sd2" style="left:40%;top:60%;background:var(--blue)"></div>
+        <div class="sd2" style="left:65%;top:33%;background:var(--teal)"></div><div class="sd2" style="left:73%;top:52%;background:var(--teal)"></div><div class="sd2" style="left:80%;top:40%;background:var(--teal)"></div><div class="sd2" style="left:75%;top:66%;background:var(--teal)"></div><div class="sd2" style="left:60%;top:58%;background:var(--teal)"></div><div class="sd2" style="left:85%;top:54%;background:var(--teal)"></div><div class="sd2" style="left:68%;top:72%;background:var(--teal)"></div>
+        <div class="sb"></div>
+        <div style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--red);font-family:var(--fm);white-space:nowrap">decision boundary</div>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:.95rem;font-size:.74rem;color:var(--muted)"><span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:var(--blue);display:inline-block"></span>Class A (ของดี)</span><span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:var(--teal);display:inline-block"></span>Class B (ของเสีย)</span></div>
+      <div class="slb">ตัวอย่างงาน</div><ul class="ul2"><li>แยกของดี/เสียในสายการผลิต</li><li>ตรวจจับรอยแตกในคอนกรีต</li><li>จำแนกประเภทข้อผิดพลาดเครื่องจักร</li><li>วินิจฉัยโรคจากสัญญาณ ECG</li></ul>
+    </div>
+    <div class="dc rg">
+      <div class="dct">Regression — ทำนายค่าต่อเนื่อง</div><div class="dcs">Output คือตัวเลขที่ต่อเนื่อง (continuous)</div>
+      <div class="rv2"><svg viewBox="0 0 300 150" preserveAspectRatio="none">
+        <circle cx="25" cy="138" r="4" fill="var(--teal)" opacity=".85"/><circle cx="50" cy="126" r="4" fill="var(--teal)" opacity=".85"/><circle cx="75" cy="112" r="4" fill="var(--teal)" opacity=".85"/><circle cx="100" cy="100" r="4" fill="var(--teal)" opacity=".85"/><circle cx="125" cy="89" r="4" fill="var(--teal)" opacity=".85"/><circle cx="150" cy="77" r="4" fill="var(--teal)" opacity=".85"/><circle cx="175" cy="65" r="4" fill="var(--teal)" opacity=".85"/><circle cx="200" cy="53" r="4" fill="var(--teal)" opacity=".85"/><circle cx="225" cy="43" r="4" fill="var(--teal)" opacity=".85"/><circle cx="250" cy="31" r="4" fill="var(--teal)" opacity=".85"/><circle cx="275" cy="21" r="4" fill="var(--teal)" opacity=".85"/>
+        <line x1="15" y1="145" x2="285" y2="14" stroke="var(--red)" stroke-width="1.5" opacity=".7"/>
+        <line x1="75" y1="112" x2="75" y2="124" stroke="var(--red)" stroke-width="1" stroke-dasharray="2 2" opacity=".5"/><line x1="150" y1="77" x2="150" y2="85" stroke="var(--red)" stroke-width="1" stroke-dasharray="2 2" opacity=".5"/><line x1="225" y1="43" x2="225" y2="51" stroke="var(--red)" stroke-width="1" stroke-dasharray="2 2" opacity=".5"/>
+        <line x1="15" y1="147" x2="287" y2="147" stroke="#e2e6ef" stroke-width="1"/><line x1="15" y1="8" x2="15" y2="147" stroke="#e2e6ef" stroke-width="1"/>
+        <text x="170" y="40" fill="var(--red)" font-size="9" opacity=".8">regression line</text>
+        <text x="290" y="150" fill="#9ca3af" font-size="9">x</text><text x="5" y="10" fill="#9ca3af" font-size="9">y</text>
+      </svg></div>
+      <div style="font-size:.73rem;color:var(--dim);margin-bottom:.95rem">เส้นแดง = โมเดลทำนาย | จุด = ข้อมูลจริง | เส้นประ = error</div>
+      <div class="slb">ตัวอย่างงาน</div><ul class="ul2"><li>ทำนายอายุใช้งานชิ้นส่วน (ชั่วโมง)</li><li>พยากรณ์กำลังไฟฟ้าที่ต้องการ (kW)</li><li>คาดการณ์แรงดันในระบบท่อ (bar)</li><li>ทำนายน้ำหนักบรรทุกโครงสร้าง (kN)</li></ul>
+    </div>
+  </div>
+</div></section>
+
+<section id="s4"><div class="wrap">
+  <div class="sl rv">04 — รายละเอียด</div>
+  <h2 class="st rv">Unsupervised Learning เจาะลึก</h2>
+  <p class="sd rv">ค้นหาโครงสร้างซ่อนอยู่ในข้อมูลโดยไม่มีคำตอบให้ — 2 เทคนิคหลักที่ใช้บ่อยในวิศวกรรม</p>
+  <div class="ug rv">
+    <div class="uc">
+      <div class="uct">Clustering — จัดกลุ่มข้อมูล</div><div class="ucs">แบ่ง data ออกเป็นกลุ่มตามความคล้ายคลึงโดยไม่รู้ล่วงหน้าว่ามีกี่กลุ่ม</div>
+      <div class="cv">
+        <div class="cr" style="left:30%;top:42%;width:110px;height:84px;border-color:var(--blue);background:var(--blue-bg)"></div>
+        <div class="cd" style="left:25%;top:38%;background:var(--blue)"></div><div class="cd" style="left:31%;top:29%;background:var(--blue)"></div><div class="cd" style="left:39%;top:44%;background:var(--blue)"></div><div class="cd" style="left:34%;top:55%;background:var(--blue)"></div><div class="cd" style="left:21%;top:50%;background:var(--blue)"></div>
+        <div class="cr" style="left:70%;top:36%;width:104px;height:78px;border-color:var(--teal);background:var(--teal-bg)"></div>
+        <div class="cd" style="left:64%;top:31%;background:var(--teal)"></div><div class="cd" style="left:72%;top:26%;background:var(--teal)"></div><div class="cd" style="left:78%;top:42%;background:var(--teal)"></div><div class="cd" style="left:68%;top:52%;background:var(--teal)"></div><div class="cd" style="left:82%;top:35%;background:var(--teal)"></div>
+        <div class="cr" style="left:50%;top:74%;width:100px;height:74px;border-color:var(--amber);background:var(--amber-bg)"></div>
+        <div class="cd" style="left:46%;top:70%;background:var(--amber)"></div><div class="cd" style="left:56%;top:65%;background:var(--amber)"></div><div class="cd" style="left:62%;top:78%;background:var(--amber)"></div><div class="cd" style="left:50%;top:83%;background:var(--amber)"></div>
+      </div>
+      <div style="font-size:.73rem;color:var(--dim);margin-bottom:.85rem">วงประ = กลุ่มที่ algorithm ค้นพบ — ไม่มีมนุษย์บอกว่ากลุ่มคืออะไร</div>
+      <div class="slb">Algorithm</div><div class="tr2"><span class="tag tl">K-Means</span><span class="tag tl">DBSCAN</span><span class="tag tl">Hierarchical</span><span class="tag tl">Gaussian Mixture</span></div>
+      <div class="slb" style="margin-top:.65rem">ตัวอย่างงาน</div><ul class="ul2"><li>จัดกลุ่มพฤติกรรมการใช้พลังงาน</li><li>แบ่งกลุ่มประเภทความเสียหายโครงสร้าง</li><li>ค้นหา failure mode ที่คล้ายกัน</li></ul>
+    </div>
+    <div class="uc">
+      <div class="uct">Dimensionality Reduction — ลดมิติ</div><div class="ucs">บีบ features หลายมิติให้เหลือน้อยมิติ สูญเสียข้อมูลน้อยที่สุด</div>
+      <div class="cv" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px">
+        <div style="display:flex;gap:3px;align-items:flex-end"><div style="width:5px;height:36px;background:var(--blue);border-radius:2px;opacity:.9"></div><div style="width:5px;height:26px;background:var(--blue);border-radius:2px;opacity:.75"></div><div style="width:5px;height:42px;background:var(--blue);border-radius:2px;opacity:.65"></div><div style="width:5px;height:18px;background:var(--blue);border-radius:2px;opacity:.5"></div><div style="width:5px;height:31px;background:var(--blue);border-radius:2px;opacity:.38"></div><div style="width:5px;height:12px;background:var(--blue);border-radius:2px;opacity:.28"></div><div style="width:5px;height:22px;background:var(--blue);border-radius:2px;opacity:.2"></div><div style="width:5px;height:8px;background:var(--blue);border-radius:2px;opacity:.13"></div><div style="width:5px;height:16px;background:var(--blue);border-radius:2px;opacity:.09"></div></div>
+        <div style="font-size:10px;color:var(--dim);font-family:var(--fm)">100 features → ↓ PCA ↓</div>
+        <div style="display:flex;gap:5px;align-items:flex-end"><div style="width:16px;height:48px;background:var(--teal);border-radius:3px;opacity:.9"></div><div style="width:16px;height:30px;background:var(--teal);border-radius:3px;opacity:.6"></div></div>
+        <div style="font-size:9px;color:var(--teal-dk);font-family:var(--fm)">PC1 (65%) + PC2 (20%) = 85% variance</div>
+      </div>
+      <div style="font-size:.73rem;color:var(--dim);margin-bottom:.85rem">PCA หา principal components ที่ capture ความแปรผันมากที่สุด</div>
+      <div class="slb">Algorithm</div><div class="tr2"><span class="tag tl">PCA</span><span class="tag tl">t-SNE</span><span class="tag tl">UMAP</span><span class="tag tl">Autoencoder</span><span class="tag tl">ICA</span></div>
+      <div class="slb" style="margin-top:.65rem">ตัวอย่างงาน</div><ul class="ul2"><li>บีบสัญญาณ sensor หลาย channel</li><li>ลด noise ใน vibration data</li><li>แสดงภาพ high-dimensional data</li></ul>
+    </div>
+  </div>
+  <div style="margin-top:2rem" class="rv">
+    <div style="font-family:var(--fd);font-size:.98rem;font-weight:700;margin-bottom:1rem">เปรียบเทียบ Supervised vs Unsupervised</div>
+    <div class="tw"><table>
+      <thead><tr><th>ลักษณะ</th><th style="color:var(--blue-dk)">Supervised</th><th style="color:var(--teal-dk)">Unsupervised</th></tr></thead>
+      <tbody>
+        <tr><td class="rl">ต้องการ Label?</td><td><span class="pill ye">ใช่ — ทุก data point</span></td><td><span class="pill no">ไม่ต้องการ</span></td></tr>
+        <tr><td class="rl">เป้าหมาย</td><td>ทำนาย output ที่กำหนด</td><td>ค้นหา pattern ซ่อนอยู่</td></tr>
+        <tr><td class="rl">Output</td><td>Class / ค่าตัวเลข</td><td>กลุ่ม / มิติที่ลดลง</td></tr>
+        <tr><td class="rl">วัดผลด้วย</td><td>Accuracy, RMSE, F1</td><td>Silhouette score, Inertia</td></tr>
+        <tr><td class="rl">ต้นทุน Label</td><td style="color:var(--amber)">สูง — ต้องใช้ผู้เชี่ยวชาญ</td><td style="color:var(--green)">ไม่มี — ใช้ raw data</td></tr>
+        <tr><td class="rl">ใช้บ่อยใน Engineering</td><td style="font-weight:600;color:var(--blue-dk)">มากที่สุด</td><td style="font-weight:600;color:var(--teal-dk)">มาก (exploration)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>เคล็ดลับ:</b> ในงานจริงมักใช้ทั้งสองร่วมกัน — ใช้ Unsupervised หา pattern ก่อน แล้ว label ผลลัพธ์ จากนั้นสร้าง Supervised model สำหรับ predict ในอนาคต</div>
+  </div>
+</div></section>
+
+<section id="s5"><div class="wrap">
+  <div class="sl rv">05 — ประยุกต์ใช้</div>
+  <h2 class="st rv">บทบาท ML ในงานวิศวกรรม</h2>
+  <p class="sd rv">ML เข้ามาช่วยในทุกสาขาวิศวกรรม ตั้งแต่ออกแบบจนถึงบำรุงรักษา</p>
+  <div class="eg rv">
+    <div class="ec"><div class="ei" style="background:var(--blue-bg)">🏗️</div><div class="ef">Civil / Structural</div><div class="etl">วิศวกรรมโยธา / โครงสร้าง</div><ul class="eli"><li>ทำนายอายุการใช้งานสะพาน</li><li>ตรวจจับรอยแตกคอนกรีตด้วย CV</li><li>วิเคราะห์ vibration โครงสร้าง</li><li>Predictive maintenance ถนน</li><li>ประเมินแรงแผ่นดินไหว</li></ul></div>
+    <div class="ec"><div class="ei" style="background:var(--teal-bg)">⚙️</div><div class="ef">Mechanical</div><div class="etl">วิศวกรรมเครื่องกล</div><ul class="eli"><li>Generative Design ชิ้นส่วน</li><li>Digital Twin + simulation</li><li>Fault detection เครื่องจักร</li><li>ควบคุม robot / CNC อัตโนมัติ</li><li>ปรับ parameter การผลิต</li></ul></div>
+    <div class="ec"><div class="ei" style="background:var(--amber-bg)">⚡</div><div class="ef">Electrical</div><div class="etl">วิศวกรรมไฟฟ้า</div><ul class="eli"><li>พยากรณ์โหลดไฟฟ้า</li><li>ตรวจจับ anomaly สัญญาณ</li><li>Smart grid management</li><li>EV battery SoH prediction</li><li>Power quality analysis</li></ul></div>
+    <div class="ec"><div class="ei" style="background:var(--coral-bg)">🧪</div><div class="ef">Chemical</div><div class="etl">วิศวกรรมเคมี</div><ul class="eli"><li>ออกแบบกระบวนการผลิต</li><li>ทำนายคุณสมบัติวัสดุใหม่</li><li>ควบคุมคุณภาพ QC อัตโนมัติ</li><li>Drug discovery (AI-based)</li><li>Process optimization</li></ul></div>
+    <div class="ec"><div class="ei" style="background:var(--purple-bg)">💻</div><div class="ef">Computer / Software</div><div class="etl">วิศวกรรมคอมพิวเตอร์</div><ul class="eli"><li>AI code assistant / review</li><li>Anomaly detection ระบบ</li><li>NLP สำหรับ requirements</li><li>AutoML pipeline</li><li>Security threat detection</li></ul></div>
+    <div class="ec"><div class="ei" style="background:var(--teal-bg)">🏭</div><div class="ef">Industrial</div><div class="etl">วิศวกรรมอุตสาหการ</div><ul class="eli"><li>วางแผน supply chain</li><li>ตรวจสอบของเสียด้วย vision AI</li><li>ปรับสายการผลิต (scheduling)</li><li>Worker safety monitoring</li><li>Yield optimization</li></ul></div>
+  </div>
+  <div style="margin-top:2rem" class="rv">
+    <div style="font-family:var(--fd);font-size:.98rem;font-weight:700;margin-bottom:.85rem">ML ในวงจรชีวิตวิศวกรรม</div>
+    <div class="lc">
+      <div class="lci" style="background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue-dk)"><div class="lcn">ออกแบบ</div><div class="lct">Generative Design</div></div>
+      <div class="lci" style="background:var(--teal-bg);border-color:var(--teal-border);color:var(--teal-dk)"><div class="lcn">จำลอง</div><div class="lct">ML surrogate model</div></div>
+      <div class="lci" style="background:var(--amber-bg);border-color:var(--amber-border);color:var(--amber)"><div class="lcn">ผลิต</div><div class="lct">Quality Control AI</div></div>
+      <div class="lci" style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d"><div class="lcn">ใช้งาน</div><div class="lct">Anomaly Detection</div></div>
+      <div class="lci" style="background:var(--purple-bg);border-color:var(--purple-border);color:var(--purple-dk)"><div class="lcn">บำรุงรักษา</div><div class="lct">Predictive Maintenance</div></div>
+    </div>
+    <div style="font-size:.75rem;color:var(--dim);text-align:center;font-family:var(--fm)">↻ ข้อมูลจากการใช้งานวนกลับมาปรับปรุงโมเดล ML</div>
+  </div>
+</div></section>
+
+<section id="s6"><div class="wrap">
+  <div class="sl rv">06 — อ้างอิง</div>
+  <h2 class="st rv">คู่มือ Algorithm</h2>
+  <p class="sd rv">รวม algorithm สำคัญพร้อมบอกว่าเหมาะกับงานประเภทใด</p>
+  <div class="as rv"><div class="ast" style="color:var(--blue-dk)">Supervised — Classification</div><div class="ag">
+    <div class="ac"><div class="an">Logistic Regression</div><div class="au">จำแนก 2 กลุ่ม เรียบง่าย ตีความได้ดี เหมาะสำหรับ baseline</div></div>
+    <div class="ac"><div class="an">Decision Tree</div><div class="au">ตีความง่าย เหมาะกับ feature ที่มีความหมายชัดเจน</div></div>
+    <div class="ac"><div class="an">Random Forest</div><div class="au">รวม decision tree หลายต้น robust และแม่นยำสูง</div></div>
+    <div class="ac"><div class="an">SVM</div><div class="au">ดีกับ data มิติสูง เช่น text classification หรือ signal</div></div>
+    <div class="ac"><div class="an">XGBoost / LightGBM</div><div class="au">Gradient boosting ประสิทธิภาพสูง นิยมใน tabular data</div></div>
+    <div class="ac"><div class="an">KNN</div><div class="au">เรียบง่าย ทำนายโดยดูจากเพื่อนบ้านใกล้สุด</div></div>
+  </div></div>
+  <div class="as rv"><div class="ast" style="color:var(--teal-dk)">Supervised — Regression</div><div class="ag">
+    <div class="ac"><div class="an">Linear Regression</div><div class="au">ทำนายค่าต่อเนื่อง ความสัมพันธ์เชิงเส้น ตีความง่าย</div></div>
+    <div class="ac"><div class="an">Polynomial Regression</div><div class="au">ขยาย linear regression รับความสัมพันธ์ nonlinear</div></div>
+    <div class="ac"><div class="an">Random Forest Regressor</div><div class="au">ทำนายค่าต่อเนื่อง robust ต่อ outlier</div></div>
+    <div class="ac"><div class="an">Ridge / Lasso</div><div class="au">Linear regression + regularization ป้องกัน overfitting</div></div>
+    <div class="ac"><div class="an">Neural Network Regressor</div><div class="au">จับ pattern ซับซ้อน เหมาะกับ data ขนาดใหญ่</div></div>
+    <div class="ac"><div class="an">LSTM / Transformer</div><div class="au">ทำนาย time series เช่น sensor reading ต่อเนื่อง</div></div>
+  </div></div>
+  <div class="as rv"><div class="ast" style="color:var(--teal-dk)">Unsupervised — Clustering</div><div class="ag">
+    <div class="ac"><div class="an">K-Means</div><div class="au">แบ่ง k กลุ่มโดยย้าย centroid ซ้ำจนลู่เข้า เร็ว scalable</div></div>
+    <div class="ac"><div class="an">DBSCAN</div><div class="au">หากลุ่มรูปร่างซับซ้อนได้ รองรับ noise/outlier ได้ดี</div></div>
+    <div class="ac"><div class="an">Hierarchical</div><div class="au">สร้าง dendrogram ดูโครงสร้างลำดับชั้นของกลุ่ม</div></div>
+    <div class="ac"><div class="an">Gaussian Mixture</div><div class="au">สมมติ data มาจาก gaussian หลายตัว soft assignment</div></div>
+  </div></div>
+  <div class="as rv"><div class="ast" style="color:var(--teal-dk)">Unsupervised — Dimensionality Reduction</div><div class="ag">
+    <div class="ac"><div class="an">PCA</div><div class="au">หา principal components เก็บ variance สูงสุด ตีความได้</div></div>
+    <div class="ac"><div class="an">t-SNE</div><div class="au">แสดงภาพ high-dimensional data เป็น 2D/3D เห็น cluster</div></div>
+    <div class="ac"><div class="an">UMAP</div><div class="au">คล้าย t-SNE แต่เร็วกว่า รักษา global structure ดีกว่า</div></div>
+    <div class="ac"><div class="an">Autoencoder</div><div class="au">Neural network บีบข้อมูล → latent space → ขยายคืน</div></div>
+  </div></div>
+  <div class="sb2 rv">
+    <div class="sbt">สรุปที่ต้องจำ</div>
+    <p style="color:var(--muted);font-size:.86rem;max-width:460px;margin:0 auto">AI ครอบ ML ครอบ Deep Learning — แต่ละระดับมีเครื่องมือและวิธีคิดที่ต่างกัน เลือกให้ถูกกับงาน</p>
+    <div class="sgrid">
+      <div class="si"><div class="snum" style="color:var(--blue)">3</div><div class="slbl">ประเภทหลักของ ML<br>Supervised · Unsupervised · RL</div></div>
+      <div class="si"><div class="snum" style="color:var(--teal)">2</div><div class="slbl">งานหลักของ Supervised<br>Classification + Regression</div></div>
+      <div class="si"><div class="snum" style="color:var(--purple)">∞</div><div class="slbl">การประยุกต์ใช้<br>ทุกสาขาวิศวกรรม</div></div>
+    </div>
+    <div style="margin-top:1.25rem;text-align:left;background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--rs);padding:.95rem 1.2rem;max-width:640px;margin-left:auto;margin-right:auto">
+      <div style="font-size:.82rem;color:var(--text-2);line-height:1.9">
+        <div><span style="color:var(--blue);font-weight:600">Supervised</span> — มีข้อมูลพร้อม label → ทำนาย / จำแนก</div>
+        <div><span style="color:var(--teal);font-weight:600">Unsupervised</span> — ไม่มี label → ค้นหา pattern / จัดกลุ่ม</div>
+        <div><span style="color:var(--purple);font-weight:600">Reinforcement</span> — เรียนจาก reward → ควบคุม / ตัดสินใจ</div>
+        <div><span style="color:var(--amber);font-weight:600">ในทางปฏิบัติ</span> — มักใช้หลายประเภทร่วมกัน และ DL เป็นเครื่องมือ ไม่ใช่เป้าหมาย</div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<footer><p>คู่มือ Machine Learning สำหรับวิศวกร · AI · ML · Deep Learning · Supervised · Unsupervised Learning</p></footer>
+<script>
+const ob=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');ob.unobserve(e.target)}})},{threshold:0.08});
+document.querySelectorAll('.rv').forEach(el=>ob.observe(el));
+</script>
+</body>
+</html>
